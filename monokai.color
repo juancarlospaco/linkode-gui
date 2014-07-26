@@ -1,0 +1,22 @@
+{
+    "keyword": "#F92672",
+    "operator": "#F92672",
+    "brace": "#F92672",
+    "definition": "#66D9EF",
+    "string": "#E6DB74",
+    "string2": "#E6DB74",
+    "comment": "#75715E",
+    "properObject": "#66D9EF",
+    "numbers": "#AE81FF",
+    "spaces": "#808080",
+    "extras": "#66D9EF",
+    "editor-background": "#272822",
+    "editor-selection-color": "#808080",
+    "editor-selection-background": "#437DCD",
+    "editor-text": "#F8F8F2",
+    "current-line": "#3E3D32",
+    "selected-word": "#3B3A32",
+    "fold-area": "#808080",
+    "fold-arrow": "#454545",
+    "linkNavigate":"#A6E22E"
+}
