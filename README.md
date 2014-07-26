@@ -16,7 +16,7 @@ wget -O - https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/li
 # Install permanently on the system:
 
 ```
-sudo apt-get install python3-pyqt5 blender
+sudo apt-get install python3-pyqt5
 sudo wget -O /usr/bin/linkode-gui https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/linkode-gui.py
 sudo chmod +x /usr/bin/linkode-gui
 linkode-gui
