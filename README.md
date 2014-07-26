@@ -5,6 +5,7 @@ linkode-gui
 - Python 3 Qt 5, single-file, no dependencies, easy use, GPLv3+ Licences.
 - .editorconfig support *( http://editorconfig.org/#overview )*
 - .color support *(Uses Ninja-IDE Editor Themes http://ninja-ide.org/schemes )*
+- 2 UX modes, Simple *(ala Elementary)* or Full *(ala KDE)*
 
 
 ![screenshot](https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/temp.jpg)
