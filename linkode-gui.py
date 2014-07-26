@@ -53,7 +53,7 @@ class Simpleditor(QsciScintilla):
 
     def __init__(self, parent=None):
         super(Simpleditor, self).__init__(parent)
-        self.setMinimumSize(400, 400)
+        self.setMinimumSize(300, 300)
         self.setEdgeMode(QsciScintilla.EdgeLine)
         self.setEdgeColumn(80)
         self.setFolding(QsciScintilla.BoxedTreeFoldStyle)
@@ -156,9 +156,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         # self.statusBar().showMessage(__doc__.strip().capitalize())
         self.setWindowTitle(__doc__.strip().capitalize())
-        self.setMinimumSize(480, 600)
+        self.setMinimumSize(480, 480)
         self.setMaximumSize(600, 1024)
-        self.resize(self.minimumSize())
+        self.resize(self.minimumSize().width(), self.get_half_resolution()[1])
         self.setWindowIcon(QIcon.fromTheme("start-here"))
         self.center()
         QShortcut("Ctrl+q", self, activated=lambda: self.close())
@@ -181,6 +181,8 @@ class MainWindow(QMainWindow):
                            lambda: open_new_tab('https://www.python.org'))
         helpMenu.addAction("About" + __doc__,
                            lambda: QMessageBox.about(self, __doc__, HELP))
+        helpMenu.addAction("About Linkode",
+                           lambda: open_new_tab('http://linkode.org/about'))
         helpMenu.addSeparator()
         helpMenu.addAction("Keyboard Shortcut", lambda: QMessageBox.information(
             self, __doc__, "<b>Quit = CTRL+Q"))
@@ -326,7 +328,7 @@ class MainWindow(QMainWindow):
         window_geometry.moveCenter(QApplication.desktop().cursor().pos())
         self.move(window_geometry.topLeft())
 
-    def get_half_of_resolution(self):
+    def get_half_resolution(self):
         """Get half of the screen resolution."""
         mouse_pointer_position = QApplication.desktop().cursor().pos()
         screen = QApplication.desktop().screenNumber(mouse_pointer_position)
