@@ -4,12 +4,12 @@
 
 
 # metadata
-""" Linkodesktop """
+""" Linkode GUI """
 __version__ = ' 0.0.1 '
 __license__ = ' GPLv3+ '
 __author__ = ' JuanCarlos '
 __email__ = ' juancarlospaco@gmail.com '
-__url__ = 'https://github.com/juancarlospaco'
+__url__ = 'https://github.com/juancarlospaco/linkode-gui#linkode-gui'
 __docformat__ = 'html'
 
 
@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QCompleter,
 
 LINKODE_API_URL = "http://linkode.org/api/1/linkodes/"
 SHEBANG = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n#\n\n\n"
-HELP = """<h3>Linkodesktop</h3><b>Linkode Desktop App!</b><br>Version {}, {}.
+HELP = """<h3>Linkode GUI</h3><b>Linkode Desktop App!</b><br>Version {}, {}.
 DEV: <a href=https://github.com/juancarlospaco>JuanCarlos</a>
 """.format(__version__, __license__)
 LINKODE_SUPPORTED_LANGUAGES = sorted((
