@@ -4,7 +4,7 @@ linkode-gui
 - linkode.org desktop client
 - Python 3 Qt 5, single-file, no dependencies, easy use, GPLv3+ Licences.
 - .editorconfig support *( http://editorconfig.org/#overview )*
-- .color support *(Uses Ninja-IDE Editor Themes)*
+- .color support *(Uses Ninja-IDE Editor Themes http://ninja-ide.org/schemes )*
 
 
 ![screenshot](https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/temp.jpg)
