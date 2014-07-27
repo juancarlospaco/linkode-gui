@@ -16,22 +16,20 @@ __docformat__ = 'html'
 # imports
 import sys
 from getopt import getopt
-from getpass import getuser
-from os import path
-from configparser import ConfigParser
 from json import loads
+from os import path
 from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
 
+from configparser import ConfigParser
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
-from PyQt5.QtGui import QColor, QIcon, QFont
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QCompleter,
-                             QDialogButtonBox, QFileDialog,
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
-                             QLabel, QMainWindow, QMessageBox,
-                             QPushButton, QShortcut, QVBoxLayout, QWidget)
-
+                             QMainWindow, QMessageBox, QPushButton, QShortcut,
+                             QVBoxLayout, QWidget)
 
 LINKODE_API_URL = "http://linkode.org/api/1/linkodes/"
 SHEBANG = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n#\n\n\n"
@@ -154,6 +152,8 @@ class Simpleditor(QsciScintilla):
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__()
+        self.father = None  # linkode id of the root linkode if any
+        self.the_last_of_us = None  # revno revision number of the last linkode
         # self.statusBar().showMessage(__doc__.strip().capitalize())
         self.setWindowTitle(__doc__.strip().capitalize())
         self.setMinimumSize(480, 480)
@@ -208,14 +208,19 @@ class MainWindow(QMainWindow):
         container_layout.addWidget(self.group1)
         # source code area editor
         self.code_editor = Simpleditor()
+        self.code_editor.textChanged.connect(self._on_code_editor_text_changed)
         QVBoxLayout(group0).addWidget(self.code_editor)
         # Graphic effect
         self.glow = QGraphicsDropShadowEffect(self)
         self.glow.setOffset(0)
-        self.glow.setBlurRadius(99)
+        self.glow.setBlurRadius(75)
         self.glow.setColor(QColor(99, 255, 255))
-        self.glow.setEnabled(True)
+        self.glow.setEnabled(False)
         self.code_editor.setGraphicsEffect(self.glow)
+        # Timer to start
+        self.code_editor_timer = QTimer(self)
+        self.code_editor_timer.setSingleShot(True)
+        self.code_editor_timer.timeout.connect(self._code_editor_timer_timeout)
         # options
         self.strp, self.lowr = QCheckBox("Strip"), QCheckBox("Lower")
         self.newl, self.sheb = QCheckBox("Add a line"), QCheckBox("Add SheBang")
@@ -223,7 +228,8 @@ class MainWindow(QMainWindow):
         self.clip = QCheckBox("Copy URL to clipboard")
         self.open = QCheckBox("Open URL with browser")
         self.bttn = QPushButton("Create Linkode")
-        self.bttn.clicked.connect(lambda: self.run(self.code_editor.text()))
+        self.bttn.clicked.connect(
+            lambda: self.post_to_linkode(self.code_editor.text()))
         self.text_type = QComboBox()
         self.text_type.addItems(LINKODE_SUPPORTED_LANGUAGES)
         self.text_type.currentIndexChanged.connect(
@@ -235,13 +241,12 @@ class MainWindow(QMainWindow):
         self.clip.setToolTip("Copy the full URL to Clipboard after posting")
         self.open.setToolTip("Open the new URL with a web browser on a new tab")
         self.mini.setToolTip("Automatically minimize the window after posting")
-        self.clea.setToolTip("Clean up all the textarea after posting")
+        self.clea.setToolTip("Clean up all the text, start new Linkode tree")
         self.sheb.setToolTip("Add a Python SheBang as the first line of text")
         self.strp.setChecked(True)
         self.clip.setChecked(True)
         self.newl.setChecked(True)
         self.mini.setChecked(True)
-        self.clea.setChecked(True)
         self.open.setChecked(True)
         group1_layout = QGridLayout(self.group1)
         group1_layout.addWidget(self.strp, 0, 0)
@@ -255,7 +260,7 @@ class MainWindow(QMainWindow):
         group1_layout.addWidget(self.text_type, 2, 2)
         group1_layout.addWidget(self.bttn, 2, 3)
 
-    def run(self, text=None):
+    def post_to_linkode(self, text=None):
         """Run the main method and create bash script."""
         if not text or not len(text.strip()):
             return  # If we got no text or text is just spaces then do nothing
@@ -263,26 +268,49 @@ class MainWindow(QMainWindow):
         text = text.lower() if self.lowr.isChecked() else text  # lowercase text
         text = text + "\n" if self.newl.isChecked() else text  # add new line
         text = SHEBANG + text if self.sheb.isChecked() else text  # add shebang
-        text_type = str(self.text_type.currentText()).strip().lower()
-        dict_data_to_send = {'content': text, 'text_type': text_type}
+        text_type = str(self.text_type.currentText()).strip().lower()  # type
+        dict_data_to_send = {'content': text, 'text_type': text_type}  # dict
+        if self.father:  # this linkode is child of a grand parent root linkode
+            dict_data_to_send['parent'] = str(self.the_last_of_us).strip()
+            linkode_api_url = LINKODE_API_URL + self.father
+        else:  # poor orphan child :(
+            linkode_api_url = LINKODE_API_URL
         raw_data_to_send = parse.urlencode(dict_data_to_send).encode("ascii")
-        http_request = request.urlopen(LINKODE_API_URL, data=raw_data_to_send)
+        http_request = request.urlopen(linkode_api_url, data=raw_data_to_send)
         if http_request.code == 201:  # if the request created the linkode
             jsony = loads(http_request.read().decode("utf8"))  # loads response
         else:  # else tell the user something weird happen
             QMessageBox.information(self, __doc__, "<b>Error posting Linkode!")
             return
-        linkode_url = LINKODE_API_URL.replace("/api/1/linkodes/", "/{}/{}")
-        linkode_url = linkode_url.format(jsony['linkode_id'], jsony['revno'])
+        linkodeurl = LINKODE_API_URL.replace("/api/1/linkodes/", "/{}/{}")
+        if self.father:
+            linkodeurl = linkodeurl.format(self.father, jsony['revno'])
+        else:
+            linkodeurl = linkodeurl.format(jsony['linkode_id'], jsony['revno'])
         if self.open.isChecked():
-            open_new_tab(linkode_url)  # open browser tab
+            open_new_tab(linkodeurl)  # open browser tab
         if self.clip.isChecked():
-            QApplication.clipboard().setText(linkode_url)  # copy to clipboard
-        if self.clea.isChecked():
-            self.code_editor.clear()  # clean out the text
+            QApplication.clipboard().setText(linkodeurl)  # copy to clipboard
         if self.mini.isChecked():
             self.showMinimized()  # minimize the window
-        return linkode_url
+        if not self.father and not self.clea.isChecked():
+            self.father = jsony['linkode_id']  # orphan get adopted by father :)
+            self.the_last_of_us = jsony['revno']  # the last of linkodes revno
+        if self.clea.isChecked():  # this is like a full Reset
+            self.code_editor.clear()  # clean out the text
+            self.father, self.the_last_of_us = None, None  # Start a new tree
+        self.glow.setEnabled(False)
+        return linkodeurl
+
+    def _on_code_editor_text_changed(self):
+        if self.code_editor_timer.isActive():
+            self.code_editor_timer.stop()
+        self.glow.setEnabled(True)
+        self.code_editor_timer.start(60 * 1000)  # 60 seconds * 1000 = milisec
+
+    def _code_editor_timer_timeout(self):
+        """Can I haz timer?."""
+        self.post_to_linkode(self.code_editor.text())
 
     def get_editorconfig(self, config_file=None):
         """Open, read and parse a .editorconfig file and return dict object."""
