@@ -3,6 +3,7 @@ linkode-gui
 
 - linkode.org desktop client.
 - Python 3 Qt 5, single-file, no dependencies, easy use,  GPLv3+ Licences.
+- Google Docs like Auto-Save, 100% automatic *(still has a button on full UX mode)* .
 - .editorconfig support *( http://editorconfig.org/#overview )*.
 - .color support *(Uses Ninja-IDE Editor Themes http://ninja-ide.org/schemes )*.
 - Code autocomplete, Syntax highlighting, Code Fold, Indentation Guides, Line Number, Line Markers.
