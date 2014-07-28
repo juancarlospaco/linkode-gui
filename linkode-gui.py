@@ -21,8 +21,8 @@ from os import path
 from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
-
 from configparser import ConfigParser
+
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QFont, QIcon
@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
                              QMainWindow, QMessageBox, QPushButton, QShortcut,
                              QVBoxLayout, QWidget)
+
 
 LINKODE_API_URL = "http://linkode.org/api/1/linkodes/"
 SHEBANG = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n#\n\n\n"
@@ -71,7 +72,7 @@ class Simpleditor(QsciScintilla):
         self.setUtf8(True)
         self.setTabWidth(4)
         self.setEolMode(QsciScintilla.EolUnix)
-        font = QFont()  # Set the default font
+        self.lexer, font = QsciLexerPython(), QFont()  # Set the font and lexer
         font.setFamily('Monospace')
         font.setFixedPitch(True)
         font.setPointSize(12)
@@ -79,8 +80,6 @@ class Simpleditor(QsciScintilla):
         self.setMarginsFont(font)
         self.marginClicked.connect(self.on_margin_clicked)
         self.markerDefine(QsciScintilla.Circle, self.ARROW_MARKER_NUM)
-        # Set Python lexer,set style for Python comments (number 1) fixed-width
-        self.lexer = QsciLexerPython()
         self.lexer.setFont(font)
         self.lexer.setDefaultFont(font)
         self.lexer.setPaper(QColor('#D5D8DB'))
@@ -89,8 +88,7 @@ class Simpleditor(QsciScintilla):
         self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
         self.setEdgeMode(QsciScintilla.EdgeLine)
         self.setEdgeColumn(80)
-        # default colors
-        self.setPaper(QColor('#272822'))
+        self.setPaper(QColor('#272822'))  # default colors
         self.setEdgeColor(QColor("#00FFFF"))
         self.setSelectionBackgroundColor(QColor('#FFF'))
         self.setSelectionForegroundColor(QColor('#000'))
@@ -113,14 +111,14 @@ class Simpleditor(QsciScintilla):
         eol_dict = {'cr': QsciScintilla.EolWindows, 'lf': QsciScintilla.EolUnix,
                     'crlf': QsciScintilla.EolMac}
         try:
-            if config['charset']:
-                self.setUtf8('utf-8' in str(config['charset']))
             if config['indent_size']:
                 self.setTabWidth(int(config['indent_size']))
             if config['end_of_line']:
                 self.setEolMode(eol_dict[str(config['end_of_line']).lower()])
             if config['indent_style']:
                 self.setIndentationsUseTabs('tab' in config['indent_style'])
+            if config['charset']:
+                self.setUtf8('utf-8' in str(config['charset']))
         except Exception as errors:
             print((" ERROR: " + errors))
 
@@ -157,7 +155,7 @@ class MainWindow(QMainWindow):
         # self.statusBar().showMessage(__doc__.strip().capitalize())
         self.setWindowTitle(__doc__.strip().capitalize())
         self.setMinimumSize(480, 480)
-        self.setMaximumSize(600, 1024)
+        self.setMaximumSize(800, 1024)
         self.resize(self.minimumSize().width(), self.get_half_resolution()[1])
         self.setWindowIcon(QIcon.fromTheme("start-here"))
         self.center()
@@ -241,7 +239,7 @@ class MainWindow(QMainWindow):
         self.clip.setToolTip("Copy the full URL to Clipboard after posting")
         self.open.setToolTip("Open the new URL with a web browser on a new tab")
         self.mini.setToolTip("Automatically minimize the window after posting")
-        self.clea.setToolTip("Clean up all the text, start new Linkode tree")
+        self.clea.setToolTip("Clean up all the text, start new Linkode tree !")
         self.sheb.setToolTip("Add a Python SheBang as the first line of text")
         self.strp.setChecked(True)
         self.clip.setChecked(True)
@@ -261,7 +259,7 @@ class MainWindow(QMainWindow):
         group1_layout.addWidget(self.bttn, 2, 3)
 
     def post_to_linkode(self, text=None):
-        """Run the main method and create bash script."""
+        """Take text str if any and process to post it to linkode,returns url"""
         if not text or not len(text.strip()):
             return  # If we got no text or text is just spaces then do nothing
         text = text.strip() if self.strp.isChecked() else text  # strip text
@@ -303,13 +301,14 @@ class MainWindow(QMainWindow):
         return linkodeurl
 
     def _on_code_editor_text_changed(self):
+        """Start or stop the Timer based on itself."""
         if self.code_editor_timer.isActive():
             self.code_editor_timer.stop()
         self.glow.setEnabled(True)
         self.code_editor_timer.start(60 * 1000)  # 60 seconds * 1000 = milisec
 
     def _code_editor_timer_timeout(self):
-        """Can I haz timer?."""
+        """Post to Linkode callbacky when the timer timeouts."""
         self.post_to_linkode(self.code_editor.text())
 
     def get_editorconfig(self, config_file=None):
