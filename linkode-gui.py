@@ -231,10 +231,13 @@ class MainWindow(QMainWindow):
         helpMenu.addSeparator()
         helpMenu.addAction("Keyboard Shortcut", lambda: QMessageBox.information(
             self, __doc__, "<b>Quit = CTRL + Q"))
-        if sys.platform.startswith("linux"):
-            helpMenu.addAction("View Source Code",
-                               lambda: call('xdg-open ' + __file__, shell=True))
+        if not sys.platform.startswith("win"):
+            helpMenu.addAction("View Source Code", lambda: call(
+                ('xdg-open ' if sys.platform.startswith("linux") else 'open ') +
+                __file__, shell=True))
         helpMenu.addAction("View GitHub Repo", lambda: open_new_tab(__url__))
+        helpMenu.addAction("Report Bugs", lambda: open_new_tab(
+            'https://github.com/juancarlospaco/linkode-gui/issues?state=open'))
         # widgets
         container = QWidget()
         container_layout = QVBoxLayout(container)
