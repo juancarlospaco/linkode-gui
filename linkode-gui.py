@@ -26,6 +26,7 @@ from configparser import ConfigParser
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtNetwork import QNetworkProxyFactory
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
                              QMainWindow, QMessageBox, QPushButton, QShortcut,
@@ -87,6 +88,7 @@ class Simpleditor(QsciScintilla):
         self.setLexer(self.lexer)
         self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
         self.setEdgeMode(QsciScintilla.EdgeLine)
+        self.ensureCursorVisible()
         self.setEdgeColumn(80)
         self.setPaper(QColor('#272822'))  # default colors
         self.setEdgeColor(QColor("#00FFFF"))
@@ -134,6 +136,8 @@ class Simpleditor(QsciScintilla):
         self.setMarginsForegroundColor(QColor(colors["fold-arrow"]))
         self.setCaretForegroundColor(QColor(colors["editor-text"]))
         self.setColor(QColor(colors["editor-text"]))
+        self.setMatchedBraceBackgroundColor(colors["brace"])
+        self.setIndentationGuidesForegroundColor(colors["extras"])
         self.setFoldMarginColors(
             QColor(colors["string2"]), QColor(colors["string"]))
         self.setSelectionBackgroundColor(
@@ -150,6 +154,7 @@ class Simpleditor(QsciScintilla):
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__()
+        QNetworkProxyFactory.setUseSystemConfiguration(True)
         self.father = None  # linkode id of the root linkode if any
         self.the_last_of_us = None  # revno revision number of the last linkode
         # self.statusBar().showMessage(__doc__.strip().capitalize())
@@ -167,6 +172,19 @@ class MainWindow(QMainWindow):
         windowMenu.addAction("Restore", lambda: self.showNormal())
         windowMenu.addAction("Center", lambda: self.center())
         windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
+        editMenu = self.menuBar().addMenu("&Edit")
+        editMenu.addAction("Undo", lambda: self.code_editor.undo())
+        editMenu.addAction("Redo", lambda: self.code_editor.redo())
+        editMenu.addSeparator()
+        editMenu.addAction("Cut", lambda: self.code_editor.cut())
+        editMenu.addAction("Copy", lambda: self.code_editor.copy())
+        editMenu.addAction("Paste", lambda: self.code_editor.paste())
+        editMenu.addAction(
+            "Delete", lambda: self.code_editor.removeSelectedText())
+        editMenu.addSeparator()
+        editMenu.addAction("Select all", lambda: self.code_editor.selectAll())
+        editMenu.addSeparator()
+        editMenu.addAction("Focus Editor", lambda: self.code_editor.setFocus())
         self.menuBar().addMenu("&Config").addAction(
             "Open and load .editorconfig file",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
@@ -183,7 +201,7 @@ class MainWindow(QMainWindow):
                            lambda: open_new_tab('http://linkode.org/about'))
         helpMenu.addSeparator()
         helpMenu.addAction("Keyboard Shortcut", lambda: QMessageBox.information(
-            self, __doc__, "<b>Quit = CTRL+Q"))
+            self, __doc__, "<b>Quit = CTRL + Q"))
         if sys.platform.startswith("linux"):
             helpMenu.addAction("View Source Code",
                                lambda: call('xdg-open ' + __file__, shell=True))
