@@ -166,7 +166,10 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon.fromTheme("start-here"))
         self.center()
         QShortcut("Ctrl+q", self, activated=lambda: self.close())
-        self.menuBar().addMenu("&File").addAction("Exit", self.close)
+        fileMenu = self.menuBar().addMenu("&File")
+        fileMenu.addAction("Save", lambda: self.save(self.code_editor.text()))
+        fileMenu.addSeparator()
+        fileMenu.addAction("Exit", self.close)
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction("Undo", lambda: self.code_editor.undo())
         editMenu.addAction("Redo", lambda: self.code_editor.redo())
@@ -383,6 +386,19 @@ class MainWindow(QMainWindow):
         self.resize(self.minimumSize()
                     if self.guimode.currentIndex() else self.maximumSize())
         self.center()
+
+    def save(self, text=None, filename=None):
+        """Save text as filename, if no text return False, if no filename ask"""
+        if not text:
+            return False
+        if not filename:
+            filename = str(QFileDialog.getSaveFileName(
+                self, __doc__ + "- Save source code file", path.expanduser("~"),
+                "Python (*.py);;JavaScript (*.js);;TXT (*.txt);;All (*.*)")[0])
+        if filename:
+            with open(filename, 'w') as file_to_write:
+                file_to_write.write(text)
+        return path.isfile(filename)
 
     def center(self):
         """Center the Window on the Current Screen,with Multi-Monitor support"""
