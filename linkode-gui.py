@@ -31,7 +31,7 @@ from PyQt5.QtNetwork import QNetworkProxyFactory
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
                              QMainWindow, QMessageBox, QPushButton, QShortcut,
-                             QVBoxLayout, QWidget)
+                             QVBoxLayout, QWidget, QInputDialog)
 
 
 LINKODE_API_URL = "http://linkode.org/api/1/linkodes/"
@@ -167,12 +167,6 @@ class MainWindow(QMainWindow):
         self.center()
         QShortcut("Ctrl+q", self, activated=lambda: self.close())
         self.menuBar().addMenu("&File").addAction("Exit", self.close)
-        windowMenu = self.menuBar().addMenu("&Window")
-        windowMenu.addAction("Minimize", lambda: self.showMinimized())
-        windowMenu.addAction("Maximize", lambda: self.showMaximized())
-        windowMenu.addAction("Restore", lambda: self.showNormal())
-        windowMenu.addAction("Center", lambda: self.center())
-        windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         editMenu = self.menuBar().addMenu("&Edit")
         editMenu.addAction("Undo", lambda: self.code_editor.undo())
         editMenu.addAction("Redo", lambda: self.code_editor.redo())
@@ -186,24 +180,37 @@ class MainWindow(QMainWindow):
         editMenu.addAction("Select all", lambda: self.code_editor.selectAll())
         editMenu.addSeparator()
         editMenu.addAction(
-            "Lower all text",
+            "lower all",
             lambda: self.code_editor.setText(self.code_editor.text().lower()))
         editMenu.addAction(
-            "Upper all text",
+            "UPPER all",
             lambda: self.code_editor.setText(self.code_editor.text().upper()))
         editMenu.addAction(
-            "Title Word all text",
+            "Title Word all",
             lambda: self.code_editor.setText(self.code_editor.text().title()))
         editMenu.addAction(
-            "Capitalize all text", lambda:
+            "Capitalize all", lambda:
             self.code_editor.setText(self.code_editor.text().capitalize()))
         editMenu.addAction(
-            "RandomizeCase all text", lambda: self.code_editor.setText(
+            "RaNdOmIzeCaSe all", lambda: self.code_editor.setText(
                 ''.join(choice((str.upper, str.lower))(x)
                         for x in self.code_editor.text())))
         editMenu.addSeparator()
-        editMenu.addAction("Clear all text", lambda: self.code_editor.clear())
+        editMenu.addAction("Clear all !", lambda: self.code_editor.clear())
         editMenu.addAction("Focus Editor", lambda: self.code_editor.setFocus())
+        viewMenu = self.menuBar().addMenu("&View")
+        viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
+        viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
+        viewMenu.addAction(
+            "Zoom To...", lambda: self.code_editor.zoomTo(QInputDialog.getInt(
+                None, __doc__, "<b>Zoom factor ?:", 1, 1, 9)[0]))
+        viewMenu.addAction("Zoom Reset", lambda: self.code_editor.zoomTo(1))
+        windowMenu = self.menuBar().addMenu("&Window")
+        windowMenu.addAction("Minimize", lambda: self.showMinimized())
+        windowMenu.addAction("Maximize", lambda: self.showMaximized())
+        windowMenu.addAction("Restore", lambda: self.showNormal())
+        windowMenu.addAction("Center", lambda: self.center())
+        windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         self.menuBar().addMenu("&Config").addAction(
             "Open and load .editorconfig file",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
