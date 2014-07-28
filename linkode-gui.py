@@ -167,6 +167,8 @@ class MainWindow(QMainWindow):
         self.center()
         QShortcut("Ctrl+q", self, activated=lambda: self.close())
         fileMenu = self.menuBar().addMenu("&File")
+        fileMenu.addAction(
+            "Open", lambda: self.code_editor.setText(self.open()))
         fileMenu.addAction("Save", lambda: self.save(self.code_editor.text()))
         fileMenu.addSeparator()
         fileMenu.addAction("Exit", self.close)
@@ -208,18 +210,18 @@ class MainWindow(QMainWindow):
             "Zoom To...", lambda: self.code_editor.zoomTo(QInputDialog.getInt(
                 None, __doc__, "<b>Zoom factor ?:", 1, 1, 9)[0]))
         viewMenu.addAction("Zoom Reset", lambda: self.code_editor.zoomTo(1))
-        windowMenu = self.menuBar().addMenu("&Window")
-        windowMenu.addAction("Minimize", lambda: self.showMinimized())
-        windowMenu.addAction("Maximize", lambda: self.showMaximized())
-        windowMenu.addAction("Restore", lambda: self.showNormal())
-        windowMenu.addAction("Center", lambda: self.center())
-        windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         self.menuBar().addMenu("&Config").addAction(
             "Open and load .editorconfig file",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
         self.menuBar().addMenu("&Skin").addAction(
             "Open and load .color file",
             lambda: self.code_editor.set_color(self.get_color()))
+        windowMenu = self.menuBar().addMenu("&Window")
+        windowMenu.addAction("Minimize", lambda: self.showMinimized())
+        windowMenu.addAction("Maximize", lambda: self.showMaximized())
+        windowMenu.addAction("Restore", lambda: self.showNormal())
+        windowMenu.addAction("Center", lambda: self.center())
+        windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         helpMenu = self.menuBar().addMenu("&Help")
         helpMenu.addAction("About Qt 5", lambda: QMessageBox.aboutQt(self))
         helpMenu.addAction("About Python 3",
@@ -274,7 +276,7 @@ class MainWindow(QMainWindow):
         self.newl, self.sheb = QCheckBox("Add a line"), QCheckBox("Add SheBang")
         self.mini, self.clea = QCheckBox("Auto minimize"), QCheckBox("Clean up")
         self.clip = QCheckBox("Copy URL to clipboard")
-        self.open = QCheckBox("Open URL with browser")
+        self.webo = QCheckBox("Open URL with browser")
         self.bttn = QPushButton("Create Linkode")
         self.bttn.clicked.connect(
             lambda: self.post_to_linkode(self.code_editor.text()))
@@ -287,7 +289,7 @@ class MainWindow(QMainWindow):
         self.newl.setToolTip("Add a new line at the end of text before posting")
         self.lowr.setToolTip("Lowercase all the text before posting")
         self.clip.setToolTip("Copy the full URL to Clipboard after posting")
-        self.open.setToolTip("Open the new URL with a web browser on a new tab")
+        self.webo.setToolTip("Open the new URL with a web browser on a new tab")
         self.mini.setToolTip("Automatically minimize the window after posting")
         self.clea.setToolTip("Clean up all the text, start new Linkode tree !")
         self.sheb.setToolTip("Add a Python SheBang as the first line of text")
@@ -295,12 +297,12 @@ class MainWindow(QMainWindow):
         self.clip.setChecked(True)
         self.newl.setChecked(True)
         self.mini.setChecked(True)
-        self.open.setChecked(True)
+        self.webo.setChecked(True)
         group1_layout = QGridLayout(self.group1)
         group1_layout.addWidget(self.strp, 0, 0)
         group1_layout.addWidget(self.newl, 0, 1)
         group1_layout.addWidget(self.mini, 0, 2)
-        group1_layout.addWidget(self.open, 0, 3)
+        group1_layout.addWidget(self.webo, 0, 3)
         group1_layout.addWidget(self.lowr, 1, 0)
         group1_layout.addWidget(self.sheb, 1, 1)
         group1_layout.addWidget(self.clea, 1, 2)
@@ -335,7 +337,7 @@ class MainWindow(QMainWindow):
             linkodeurl = linkodeurl.format(self.father, jsony['revno'])
         else:
             linkodeurl = linkodeurl.format(jsony['linkode_id'], jsony['revno'])
-        if self.open.isChecked():
+        if self.webo.isChecked():
             open_new_tab(linkodeurl)  # open browser tab
         if self.clip.isChecked():
             QApplication.clipboard().setText(linkodeurl)  # copy to clipboard
@@ -402,6 +404,18 @@ class MainWindow(QMainWindow):
             with open(filename, 'w') as file_to_write:
                 file_to_write.write(text)
         return path.isfile(filename)
+
+    def open(self, filename=None):
+        """Open text from filename,if no text return None,if no filename ask"""
+        if not filename:
+            filename = str(QFileDialog.getOpenFileName(
+                self, __doc__ + "- Open source code file", path.expanduser("~"),
+                "Python (*.py);;JavaScript (*.js);;TXT (*.txt);;All (*.*)")[0])
+        if filename and path.isfile(filename):
+            with open(filename, 'r') as file_to_read:
+                text = file_to_read.read()
+        if text:
+            return text
 
     def center(self):
         """Center the Window on the Current Screen,with Multi-Monitor support"""
