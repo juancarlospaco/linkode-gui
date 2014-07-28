@@ -22,6 +22,7 @@ from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
 from configparser import ConfigParser
+from random import choice
 
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
@@ -184,6 +185,24 @@ class MainWindow(QMainWindow):
         editMenu.addSeparator()
         editMenu.addAction("Select all", lambda: self.code_editor.selectAll())
         editMenu.addSeparator()
+        editMenu.addAction(
+            "Lower all text",
+            lambda: self.code_editor.setText(self.code_editor.text().lower()))
+        editMenu.addAction(
+            "Upper all text",
+            lambda: self.code_editor.setText(self.code_editor.text().upper()))
+        editMenu.addAction(
+            "Title Word all text",
+            lambda: self.code_editor.setText(self.code_editor.text().title()))
+        editMenu.addAction(
+            "Capitalize all text", lambda:
+            self.code_editor.setText(self.code_editor.text().capitalize()))
+        editMenu.addAction(
+            "RandomizeCase all text", lambda: self.code_editor.setText(
+                ''.join(choice((str.upper, str.lower))(x)
+                        for x in self.code_editor.text())))
+        editMenu.addSeparator()
+        editMenu.addAction("Clear all text", lambda: self.code_editor.clear())
         editMenu.addAction("Focus Editor", lambda: self.code_editor.setFocus())
         self.menuBar().addMenu("&Config").addAction(
             "Open and load .editorconfig file",
