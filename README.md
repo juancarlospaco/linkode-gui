@@ -7,7 +7,7 @@ linkode-gui
 - .editorconfig support *( http://editorconfig.org/#overview )*.
 - .color support *(Uses Ninja-IDE Editor Themes http://ninja-ide.org/schemes )*.
 - Code autocomplete, Syntax highlighting, Code Fold, Indentation Guides, Line Number, Line Markers.
-- Undo, Redo, Cut, Copy, Paste, Zoom-In, Zoom-Out, Zoom-to, Zoom-Reset.
+- Undo, Redo, Cut, Copy, Paste, Zoom-In, Zoom-Out, Zoom-to, Zoom-Reset, file open, file save.
 - UPPER case, lower case, Title case, Capitalize case, RaNdOm case.
 - Window sizes and positioning adjustment helper.
 - 2 UX modes, Simple *(ala Elementary)* or Full *(ala KDE)*
