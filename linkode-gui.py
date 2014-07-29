@@ -197,6 +197,9 @@ class MainWindow(QMainWindow):
             "Capitalize all", lambda:
             self.code_editor.setText(self.code_editor.text().capitalize()))
         editMenu.addAction(
+            "InvertCase all", lambda:
+            self.code_editor.setText(self.code_editor.text().swapcase()))
+        editMenu.addAction(
             "RaNdOmIzeCaSe all", lambda: self.code_editor.setText(
                 ''.join(choice((str.upper, str.lower))(x)
                         for x in self.code_editor.text())))
