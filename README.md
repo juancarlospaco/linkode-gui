@@ -22,19 +22,31 @@ linkode-gui
 wget -O - https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/linkode-gui.py | python3
 ```
 
+
 # Install permanently on the system:
 
 ```
-sudo apt-get install python3-pyqt5
+sudo apt-get install python3-pyqt5  # OR  sudo yum install python3-qt5  OR  sudo pacman -S python-pyqt5
 sudo wget -O /usr/bin/linkode-gui https://raw.githubusercontent.com/juancarlospaco/linkode-gui/master/linkode-gui.py
 sudo chmod +x /usr/bin/linkode-gui
 linkode-gui
 ```
 
+
 # Requisites:
 
 - [Python 3.x](https://www.python.org "Python Homepage")
 - [PyQt 5.x](http://www.riverbankcomputing.co.uk/software/pyqt/download5 "PyQt5 Homepage")
+
+
+# Why a Client ?:
+
+- No graphical client, theres a command line only Linux only tool with no Clipboard integration.
+- Need something like [Gisto](http://www.gistoapp.com "Gisto App for Gists") but instead of NodeJS to use Python3, because its better.
+- NodeJS starts a Chromium everytime you do a pastebin *(>350Mb RAM)*, JS is slow *(GUI spinners)*
+- Linkode Web editor was ~300px tall, no Clipboard integration, lacks features of this client.
+- No root needed to install, compilable to Binary with [Nuitka](http://nuitka.net "Nuitka Python3 to Binary translator"), finally because I can :octocat:
+
 
 Donate:
 -------
