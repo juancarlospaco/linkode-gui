@@ -186,28 +186,56 @@ class MainWindow(QMainWindow):
         editMenu.addSeparator()
         editMenu.addAction("Select all", lambda: self.code_editor.selectAll())
         editMenu.addSeparator()
+        editMenu.addAction("lower selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                             self.code_editor.selectedText().lower()))
+        editMenu.addAction("UPPER selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                             self.code_editor.selectedText().upper()))
+        editMenu.addAction("Title Word selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                             self.code_editor.selectedText().title()))
+        editMenu.addAction("Capitalize selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                             self.code_editor.selectedText().capitalize()))
+        editMenu.addAction("Swapcase selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                             self.code_editor.selectedText().swapcase()))
+        editMenu.addAction("RaNdOmIzeCaSe selected text", lambda:
+                           self.code_editor.replaceSelectedText(
+                               ''.join(choice((str.upper, str.lower))(x)
+                               for x in self.code_editor.selectedText())))
+        # http://en.wikipedia.org/wiki/Letter_case
         editMenu.addAction(
-            "lower all",
-            lambda: self.code_editor.setText(self.code_editor.text().lower()))
+            "CamelCase selected text", lambda:
+                self.code_editor.replaceSelectedText(
+                    self.code_editor.selectedText().title().replace(" ", "")))
         editMenu.addAction(
-            "UPPER all",
-            lambda: self.code_editor.setText(self.code_editor.text().upper()))
+            "Snake_case selected text", lambda:
+                self.code_editor.replaceSelectedText(
+                    self.code_editor.selectedText().replace(" ", "_")))
         editMenu.addAction(
-            "Title Word all",
-            lambda: self.code_editor.setText(self.code_editor.text().title()))
-        editMenu.addAction(
-            "Capitalize all", lambda:
-            self.code_editor.setText(self.code_editor.text().capitalize()))
-        editMenu.addAction(
-            "Swapcase all", lambda:
-            self.code_editor.setText(self.code_editor.text().swapcase()))
-        editMenu.addAction(
-            "RaNdOmIzeCaSe all", lambda: self.code_editor.setText(
-                ''.join(choice((str.upper, str.lower))(x)
-                        for x in self.code_editor.text())))
+            "Spinal-case selected text", lambda:
+                self.code_editor.replaceSelectedText(
+                    self.code_editor.selectedText().replace(" ", "-")))
+        editMenu.addSeparator()
+        editMenu.addAction("Sort selected text", lambda:
+                           self.code_editor.replaceSelectedText("".join(sorted(
+                               self.code_editor.selectedText()))))
+        editMenu.addAction("Reverse selected text", lambda:
+                           self.code_editor.replaceSelectedText("".join(
+                               reversed(self.code_editor.selectedText()))))
+        editMenu.addAction("Join lines of selected text", lambda:
+                           self.code_editor.replaceSelectedText("".join(
+                               self.code_editor.selectedText().splitlines())))
+        editMenu.addAction("Join lines with semicolon of selected text", lambda:
+                           self.code_editor.replaceSelectedText("; ".join(
+                               self.code_editor.selectedText().splitlines())))
         editMenu.addSeparator()
         editMenu.addAction("Clear all !", lambda: self.code_editor.clear())
-        editMenu.addAction("Focus Editor", lambda: self.code_editor.setFocus())
+        editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
+        editMenu.addAction("Force ignore modifications", lambda:
+                               self.code_editor.setModified(False))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
