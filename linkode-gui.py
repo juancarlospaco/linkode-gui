@@ -238,6 +238,10 @@ class MainWindow(QMainWindow):
                            self.code_editor.replaceSelectedText("; ".join(
                                self.code_editor.selectedText().splitlines())))
         editMenu.addSeparator()
+        editMenu.addAction("Google selected text", lambda: open_new_tab(
+            "https://www.google.com/search?q=" +
+                self.code_editor.selectedText()))
+        editMenu.addSeparator()
         editMenu.addAction("Clear all !", lambda: self.code_editor.clear())
         editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
         editMenu.addAction("Force ignore modifications", lambda:
