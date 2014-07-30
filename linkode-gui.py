@@ -11,6 +11,8 @@ __author__ = ' JuanCarlos '
 __email__ = ' juancarlospaco@gmail.com '
 __url__ = 'https://github.com/juancarlospaco/linkode-gui#linkode-gui'
 __docformat__ = 'html'
+__source__ = ('https://raw.githubusercontent.com/juancarlospaco/'
+              'linkode-gui/master/linkode-gui.py')
 
 
 # imports
@@ -197,7 +199,7 @@ class MainWindow(QMainWindow):
             "Capitalize all", lambda:
             self.code_editor.setText(self.code_editor.text().capitalize()))
         editMenu.addAction(
-            "InvertCase all", lambda:
+            "Swapcase all", lambda:
             self.code_editor.setText(self.code_editor.text().swapcase()))
         editMenu.addAction(
             "RaNdOmIzeCaSe all", lambda: self.code_editor.setText(
@@ -243,6 +245,7 @@ class MainWindow(QMainWindow):
         helpMenu.addAction("View GitHub Repo", lambda: open_new_tab(__url__))
         helpMenu.addAction("Report Bugs", lambda: open_new_tab(
             'https://github.com/juancarlospaco/linkode-gui/issues?state=open'))
+        helpMenu.addAction("Check Updates", lambda: self.check_for_updates())
         # widgets
         container = QWidget()
         container_layout = QVBoxLayout(container)
@@ -296,6 +299,14 @@ class MainWindow(QMainWindow):
         self.mini.setToolTip("Automatically minimize the window after posting")
         self.clea.setToolTip("Clean up all the text, start new Linkode tree !")
         self.sheb.setToolTip("Add a Python SheBang as the first line of text")
+        self.strp.setStatusTip(self.strp.toolTip())
+        self.newl.setStatusTip(self.newl.toolTip())
+        self.lowr.setStatusTip(self.lowr.toolTip())
+        self.clip.setStatusTip(self.clip.toolTip())
+        self.webo.setStatusTip(self.webo.toolTip())
+        self.mini.setStatusTip(self.mini.toolTip())
+        self.clea.setStatusTip(self.clea.toolTip())
+        self.sheb.setStatusTip(self.sheb.toolTip())
         self.strp.setChecked(True)
         self.clip.setChecked(True)
         self.newl.setChecked(True)
@@ -419,6 +430,16 @@ class MainWindow(QMainWindow):
                 text = file_to_read.read()
         if text:
             return text
+
+    def check_for_updates(self):
+        """Method to check for updates from Git repo versus this version."""
+        this_version = str(open(__file__).read())
+        last_version = str(request.urlopen(__source__).read().decode("utf8"))
+        if this_version != last_version:
+            m = "Theres new Version available!<br>Download update from the web"
+        else:
+            m = "No new updates!<br>You have the lastest version of this app"
+        return QMessageBox.information(self, __doc__.title(), "<b>" + m)
 
     def center(self):
         """Center the Window on the Current Screen,with Multi-Monitor support"""
