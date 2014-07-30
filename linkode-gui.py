@@ -24,7 +24,7 @@ from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
 from configparser import ConfigParser
-from random import choice
+from random import choice, sample
 
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
@@ -225,6 +225,12 @@ class MainWindow(QMainWindow):
         editMenu.addAction("Reverse selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(
                                reversed(self.code_editor.selectedText()))))
+        editMenu.addAction(
+            "Randomize selected text", lambda:
+                self.code_editor.replaceSelectedText("".join(sample(
+                    self.code_editor.selectedText(),
+                    len(self.code_editor.selectedText())))))
+        editMenu.addSeparator()
         editMenu.addAction("Join lines of selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(
                                self.code_editor.selectedText().splitlines())))
