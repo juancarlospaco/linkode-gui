@@ -322,6 +322,8 @@ class MainWindow(QMainWindow):
         self.clip = QCheckBox("Copy URL to clipboard")
         self.webo = QCheckBox("Open URL with browser")
         self.bttn = QPushButton("Create Linkode")
+        self.bttn.setToolTip(self.bttn.text())
+        self.bttn.setStatusTip(self.bttn.toolTip())
         self.bttn.clicked.connect(
             lambda: self.post_to_linkode(self.code_editor.text()))
         self.text_type = QComboBox()
