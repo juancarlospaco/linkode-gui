@@ -25,6 +25,7 @@ from urllib import parse, request
 from webbrowser import open_new_tab
 from configparser import ConfigParser
 from random import choice, sample
+from re import sub
 
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
@@ -225,11 +226,15 @@ class MainWindow(QMainWindow):
         editMenu.addAction("Reverse selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(
                                reversed(self.code_editor.selectedText()))))
-        editMenu.addAction(
+        editMenu.addAction(  # randomize the selected characters
             "Randomize selected text", lambda:
                 self.code_editor.replaceSelectedText("".join(sample(
                     self.code_editor.selectedText(),
                     len(self.code_editor.selectedText())))))
+        editMenu.addAction(  # cleans up and sanitize all weird characters
+            "Sanitize weird characters from selected text", lambda:
+                self.code_editor.replaceSelectedText(
+                    sub("[^\x00-\x7F]+", "", self.code_editor.selectedText())))
         editMenu.addSeparator()
         editMenu.addAction("Join lines of selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(
