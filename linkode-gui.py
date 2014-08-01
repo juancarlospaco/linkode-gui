@@ -269,6 +269,9 @@ class MainWindow(QMainWindow):
             "URLencode selected text", lambda:
             self.code_editor.replaceSelectedText(parse.quote_plus(
                 self.code_editor.selectedText(), encoding="utf-8")))
+        sourceMenu.addAction(
+            "Replace Tabs with Spaces", lambda: self.code_editor.setText(
+                self.code_editor.text().replace("\t", "    ")))
         sourceMenu.addSeparator()
         sourceMenu.addAction(
             "Insert Lorem Impsum...", lambda: self.code_editor.append(
@@ -292,6 +295,16 @@ class MainWindow(QMainWindow):
         sourceMenu.addAction("Google selected text", lambda: open_new_tab(
             "https://www.google.com/search?q=" +
             self.code_editor.selectedText()))
+        sourceSubmenu = sourceMenu.addMenu("Debugging tricks")
+        sourceSubmenu.addAction(
+            "Insert wdb.set_trace()", lambda:
+            self.code_editor.append("__import__('wdb').set_trace()  #FIXME"))
+        sourceSubmenu.addAction(
+            "Insert ipdb.set_trace()", lambda:
+            self.code_editor.append("__import__('ipdb').set_trace()  #FIXME"))
+        sourceSubmenu.addAction(
+            "Insert pdb.set_trace()", lambda:
+            self.code_editor.append("__import__('pdb').set_trace()  #FIXME"))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
