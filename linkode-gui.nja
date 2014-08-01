@@ -1,0 +1,27 @@
+{
+  "mainFile": "linkode-gui.py",
+  "use-tabs": false,
+  "venv": "",
+  "relatedProjects": [],
+  "name": "linkode-gui",
+  "license": "GNU Lesser General Public License 3.0",
+  "pythonExec": "python3",
+  "url": "https://github.com/juancarlospaco/linkode-gui#linkode-gui",
+  "PYTHONPATH": "",
+  "preExecScript": "",
+  "additional_builtins": [],
+  "programParams": "",
+  "indentation": 4,
+  "supported-extensions": [
+    ".py",
+    ".color",
+    ".editorconfig",
+    ".nja",
+    ".jpg",
+    ".md",
+    ".*"
+  ],
+  "project-type": "python",
+  "postExecScript": "",
+  "description": "Linkode.org desktop client on Python 3 Qt 5, single-file, no dependencies, with Google Docs like Auto-Save."
+}

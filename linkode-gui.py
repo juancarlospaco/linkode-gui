@@ -189,36 +189,37 @@ class MainWindow(QMainWindow):
         editMenu.addSeparator()
         editMenu.addAction("lower selected text", lambda:
                            self.code_editor.replaceSelectedText(
-                             self.code_editor.selectedText().lower()))
+                               self.code_editor.selectedText().lower()))
         editMenu.addAction("UPPER selected text", lambda:
                            self.code_editor.replaceSelectedText(
-                             self.code_editor.selectedText().upper()))
+                               self.code_editor.selectedText().upper()))
         editMenu.addAction("Title Word selected text", lambda:
                            self.code_editor.replaceSelectedText(
-                             self.code_editor.selectedText().title()))
+                               self.code_editor.selectedText().title()))
         editMenu.addAction("Capitalize selected text", lambda:
                            self.code_editor.replaceSelectedText(
-                             self.code_editor.selectedText().capitalize()))
+                               self.code_editor.selectedText().capitalize()))
         editMenu.addAction("Swapcase selected text", lambda:
                            self.code_editor.replaceSelectedText(
-                             self.code_editor.selectedText().swapcase()))
-        editMenu.addAction("RaNdOmIzeCaSe selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               ''.join(choice((str.upper, str.lower))(x)
-                               for x in self.code_editor.selectedText())))
+                               self.code_editor.selectedText().swapcase()))
+        editMenu.addAction(
+            "RaNdOmIzeCaSe selected text", lambda:
+            self.code_editor.replaceSelectedText(''.join(
+                choice((str.upper, str.lower))(x)
+                for x in self.code_editor.selectedText())))
         # http://en.wikipedia.org/wiki/Letter_case
         editMenu.addAction(
             "CamelCase selected text", lambda:
-                self.code_editor.replaceSelectedText(
-                    self.code_editor.selectedText().title().replace(" ", "")))
+            self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().title().replace(" ", "")))
         editMenu.addAction(
             "Snake_case selected text", lambda:
-                self.code_editor.replaceSelectedText(
-                    self.code_editor.selectedText().replace(" ", "_")))
+            self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().replace(" ", "_")))
         editMenu.addAction(
             "Spinal-case selected text", lambda:
-                self.code_editor.replaceSelectedText(
-                    self.code_editor.selectedText().replace(" ", "-")))
+            self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().replace(" ", "-")))
         editMenu.addSeparator()
         editMenu.addAction("Sort selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(sorted(
@@ -228,13 +229,13 @@ class MainWindow(QMainWindow):
                                reversed(self.code_editor.selectedText()))))
         editMenu.addAction(  # randomize the selected characters
             "Randomize selected text", lambda:
-                self.code_editor.replaceSelectedText("".join(sample(
-                    self.code_editor.selectedText(),
-                    len(self.code_editor.selectedText())))))
+            self.code_editor.replaceSelectedText("".join(sample(
+                self.code_editor.selectedText(),
+                len(self.code_editor.selectedText())))))
         editMenu.addAction(  # cleans up and sanitize all weird characters
             "Sanitize weird characters from selected text", lambda:
-                self.code_editor.replaceSelectedText(
-                    sub("[^\x00-\x7F]+", "", self.code_editor.selectedText())))
+            self.code_editor.replaceSelectedText(
+                sub("[^\x00-\x7F]+", "", self.code_editor.selectedText())))
         editMenu.addSeparator()
         editMenu.addAction("Join lines of selected text", lambda:
                            self.code_editor.replaceSelectedText("".join(
@@ -245,12 +246,12 @@ class MainWindow(QMainWindow):
         editMenu.addSeparator()
         editMenu.addAction("Google selected text", lambda: open_new_tab(
             "https://www.google.com/search?q=" +
-                self.code_editor.selectedText()))
+            self.code_editor.selectedText()))
         editMenu.addSeparator()
         editMenu.addAction("Clear all !", lambda: self.code_editor.clear())
         editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
         editMenu.addAction("Force ignore modifications", lambda:
-                               self.code_editor.setModified(False))
+                           self.code_editor.setModified(False))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
