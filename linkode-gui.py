@@ -426,14 +426,8 @@ class MainWindow(QMainWindow):
         linkodeurl = LINKODE_API_URL.replace("/api/1/linkodes/", "/{}/{}")
         if self.father:
             linkodeurl = linkodeurl.format(self.father, jsony['revno'])
-            self.bttn.setText("Save new version")  # change text like on the web
-            self.bttn.setToolTip(self.bttn.text())
-            self.bttn.setStatusTip(self.bttn.toolTip())
         else:
             linkodeurl = linkodeurl.format(jsony['linkode_id'], jsony['revno'])
-            self.bttn.setText("Create Linkode")
-            self.bttn.setToolTip(self.bttn.text())
-            self.bttn.setStatusTip(self.bttn.toolTip())
         if self.webo.isChecked():
             open_new_tab(linkodeurl)  # open browser tab
         if self.clip.isChecked():
@@ -446,6 +440,10 @@ class MainWindow(QMainWindow):
         if self.clea.isChecked():  # this is like a full Reset
             self.code_editor.clear()  # clean out the text
             self.father, self.the_last_of_us = None, None  # Start a new tree
+        self.bttn.setText(  # change the text on the button like on linkode web
+            "Save new version" if self.father else "Create Linkode")
+        self.bttn.setToolTip(self.bttn.text())
+        self.bttn.setStatusTip(self.bttn.toolTip())
         self.glow.setEnabled(False)
         return linkodeurl
 
