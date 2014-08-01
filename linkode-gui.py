@@ -426,8 +426,14 @@ class MainWindow(QMainWindow):
         linkodeurl = LINKODE_API_URL.replace("/api/1/linkodes/", "/{}/{}")
         if self.father:
             linkodeurl = linkodeurl.format(self.father, jsony['revno'])
+            self.bttn.setText("Save new version")  # change text like on the web
+            self.bttn.setToolTip(self.bttn.text())
+            self.bttn.setStatusTip(self.bttn.toolTip())
         else:
             linkodeurl = linkodeurl.format(jsony['linkode_id'], jsony['revno'])
+            self.bttn.setText("Create Linkode")
+            self.bttn.setToolTip(self.bttn.text())
+            self.bttn.setStatusTip(self.bttn.toolTip())
         if self.webo.isChecked():
             open_new_tab(linkodeurl)  # open browser tab
         if self.clip.isChecked():
