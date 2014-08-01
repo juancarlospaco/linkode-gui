@@ -38,28 +38,31 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QVBoxLayout, QWidget, QInputDialog)
 
 
+###############################################################################
+
+
 LINKODE_API_URL = "http://linkode.org/api/1/linkodes/"
 SHEBANG = "#!/usr/bin/env python\n# -*- coding: utf-8 -*-\n#\n\n\n"
 HELP = """<h3>Linkode GUI</h3><b>Linkode Desktop App!</b><br>Version {}, {}.
 DEV: <a href=https://github.com/juancarlospaco>JuanCarlos</a>
 """.format(__version__, __license__)
-LINKODE_SUPPORTED_LANGUAGES = sorted((
+LINKODE_SUPPORTED_LANGUAGES = tuple(sorted((
     'Auto', 'C', 'C#', 'C++', 'CSS', 'Clojure', 'CoffeeScript', 'D', 'Diff',
     'Erlang', 'Go', 'HTML', 'HTMLmixed', 'Haskell', 'JSON', 'Java',
     'JavaScript', 'Lua', 'MarkDown', 'PHP', 'Perl', 'Plain Text', 'Python', 'R',
-    'Ruby', 'Rust', 'Scala', 'Shell', 'XML', 'http', 'sql', 'tex'))
-IMPSUM = """At vero eos et accusamus et iusto odio dignissimos ducimus qui ne te
+    'Ruby', 'Rust', 'Scala', 'Shell', 'XML', 'http', 'sql', 'tex')))
+IMPSUM = tuple("""at vero eos et accusamus et iusto odio dignissimos ducimus qui
 blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas
-molestias excepturi sint occaecati cupiditate non provident, similique sunt in
-culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et
+molestias excepturi sint occaecati cupiditate non provident, similique sunt in e
+culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et ne
 harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum
-soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
+soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime te
 placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
 Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus ur
 saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. a
 Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis repellat.
 voluptatibus maiores alias consequatur aut perferendis doloribus asperiores et
-""".split(" ")
+""".strip().lower().split(" "))
 
 
 ###############################################################################
@@ -109,8 +112,8 @@ class Simpleditor(QsciScintilla):
         self.setEdgeColumn(80)
         self.setPaper(QColor('#272822'))  # default colors
         self.setEdgeColor(QColor("#00FFFF"))
-        self.setSelectionBackgroundColor(QColor('#FFF'))
-        self.setSelectionForegroundColor(QColor('#000'))
+        self.setSelectionBackgroundColor(QColor('#000'))
+        self.setSelectionForegroundColor(QColor('#FFF'))
         self.setCaretLineBackgroundColor(QColor('#FFF'))
         self.setMarginsBackgroundColor(QColor('#292C2F'))
         self.setMarginsForegroundColor(QColor('#FFF'))
@@ -177,7 +180,7 @@ class MainWindow(QMainWindow):
         # self.statusBar().showMessage(__doc__.strip().capitalize())
         self.setWindowTitle(__doc__.strip().capitalize())
         self.setMinimumSize(480, 480)
-        self.setMaximumSize(800, 1024)
+        self.setMaximumSize(1024, 1024)
         self.resize(self.minimumSize().width(), self.get_half_resolution()[1])
         self.setWindowIcon(QIcon.fromTheme("start-here"))
         self.center()
@@ -266,11 +269,17 @@ class MainWindow(QMainWindow):
             "URLencode selected text", lambda:
             self.code_editor.replaceSelectedText(parse.quote_plus(
                 self.code_editor.selectedText(), encoding="utf-8")))
-        sourceMenu.addAction("Lorem Impsum...", lambda: self.code_editor.append(
-            "Lorem ipsum dolor sit amet, " + " ".join((
-                sample(IMPSUM, QInputDialog.getInt(
-                    self, __doc__, "<b>How many words ?:",
-                    len(IMPSUM) // 2, 1, len(IMPSUM))[0])))))
+        sourceMenu.addSeparator()
+        sourceMenu.addAction(
+            "Insert Lorem Impsum...", lambda: self.code_editor.append(
+                "Lorem ipsum dolor sit amet, " + " ".join((sample(
+                    IMPSUM, QInputDialog.getInt(
+                        self, __doc__, "<b>How many words ?:",
+                        len(IMPSUM) // 2, 1, len(IMPSUM))[0]))) + "\n\n"))
+        sourceMenu.addAction("Insert horizontal line",
+                             lambda: self.code_editor.append("#" * 80 + "\n\n"))
+        sourceMenu.addAction("Insert Python SheBang",
+                             lambda: self.code_editor.append(SHEBANG))
         sourceMenu.addSeparator()
         sourceMenu.addAction("Join lines of selected text", lambda:
                              self.code_editor.replaceSelectedText("".join(
