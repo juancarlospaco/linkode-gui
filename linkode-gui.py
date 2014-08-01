@@ -26,6 +26,7 @@ from webbrowser import open_new_tab
 from configparser import ConfigParser
 from random import choice, sample
 from re import sub
+from base64 import b64encode, urlsafe_b64encode
 
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
@@ -47,6 +48,18 @@ LINKODE_SUPPORTED_LANGUAGES = sorted((
     'Erlang', 'Go', 'HTML', 'HTMLmixed', 'Haskell', 'JSON', 'Java',
     'JavaScript', 'Lua', 'MarkDown', 'PHP', 'Perl', 'Plain Text', 'Python', 'R',
     'Ruby', 'Rust', 'Scala', 'Shell', 'XML', 'http', 'sql', 'tex'))
+IMPSUM = """At vero eos et accusamus et iusto odio dignissimos ducimus qui ne te
+blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas
+molestias excepturi sint occaecati cupiditate non provident, similique sunt in
+culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et
+harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum
+soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
+placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus ur
+saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. a
+Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis repellat.
+voluptatibus maiores alias consequatur aut perferendis doloribus asperiores et
+""".split(" ")
 
 
 ###############################################################################
@@ -186,72 +199,90 @@ class MainWindow(QMainWindow):
             "Delete", lambda: self.code_editor.removeSelectedText())
         editMenu.addSeparator()
         editMenu.addAction("Select all", lambda: self.code_editor.selectAll())
+        editMenu.addAction("Clear all!", lambda: self.code_editor.clear())
         editMenu.addSeparator()
-        editMenu.addAction("lower selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               self.code_editor.selectedText().lower()))
-        editMenu.addAction("UPPER selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               self.code_editor.selectedText().upper()))
-        editMenu.addAction("Title Word selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               self.code_editor.selectedText().title()))
-        editMenu.addAction("Capitalize selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               self.code_editor.selectedText().capitalize()))
-        editMenu.addAction("Swapcase selected text", lambda:
-                           self.code_editor.replaceSelectedText(
-                               self.code_editor.selectedText().swapcase()))
-        editMenu.addAction(
+        editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
+        editMenu.addAction("Force ignore modifications", lambda:
+                           self.code_editor.setModified(False))
+        sourceMenu = self.menuBar().addMenu("&Source")
+        sourceMenu.addAction("lower selected text", lambda:
+                             self.code_editor.replaceSelectedText(
+                                 self.code_editor.selectedText().lower()))
+        sourceMenu.addAction("UPPER selected text", lambda:
+                             self.code_editor.replaceSelectedText(
+                                 self.code_editor.selectedText().upper()))
+        sourceMenu.addAction("Title Word selected text", lambda:
+                             self.code_editor.replaceSelectedText(
+                                 self.code_editor.selectedText().title()))
+        sourceMenu.addAction("Capitalize selected text", lambda:
+                             self.code_editor.replaceSelectedText(
+                                 self.code_editor.selectedText().capitalize()))
+        sourceMenu.addAction("Swapcase selected text", lambda:
+                             self.code_editor.replaceSelectedText(
+                                 self.code_editor.selectedText().swapcase()))
+        sourceMenu.addAction(
             "RaNdOmIzeCaSe selected text", lambda:
             self.code_editor.replaceSelectedText(''.join(
                 choice((str.upper, str.lower))(x)
                 for x in self.code_editor.selectedText())))
         # http://en.wikipedia.org/wiki/Letter_case
-        editMenu.addAction(
+        sourceMenu.addAction(
             "CamelCase selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().title().replace(" ", "")))
-        editMenu.addAction(
+        sourceMenu.addAction(
             "Snake_case selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "_")))
-        editMenu.addAction(
+        sourceMenu.addAction(
             "Spinal-case selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "-")))
-        editMenu.addSeparator()
-        editMenu.addAction("Sort selected text", lambda:
-                           self.code_editor.replaceSelectedText("".join(sorted(
-                               self.code_editor.selectedText()))))
-        editMenu.addAction("Reverse selected text", lambda:
-                           self.code_editor.replaceSelectedText("".join(
-                               reversed(self.code_editor.selectedText()))))
-        editMenu.addAction(  # randomize the selected characters
+        sourceMenu.addSeparator()
+        sourceMenu.addAction("Sort selected text", lambda:
+                             self.code_editor.replaceSelectedText("".join(
+                                 sorted(self.code_editor.selectedText()))))
+        sourceMenu.addAction("Reverse selected text", lambda:
+                             self.code_editor.replaceSelectedText("".join(
+                                 reversed(self.code_editor.selectedText()))))
+        sourceMenu.addAction(  # randomize the selected characters
             "Randomize selected text", lambda:
             self.code_editor.replaceSelectedText("".join(sample(
                 self.code_editor.selectedText(),
                 len(self.code_editor.selectedText())))))
-        editMenu.addAction(  # cleans up and sanitize all weird characters
+        sourceMenu.addAction(  # cleans up and sanitize all weird characters
             "Sanitize weird characters from selected text", lambda:
             self.code_editor.replaceSelectedText(
                 sub("[^\x00-\x7F]+", "", self.code_editor.selectedText())))
-        editMenu.addSeparator()
-        editMenu.addAction("Join lines of selected text", lambda:
-                           self.code_editor.replaceSelectedText("".join(
-                               self.code_editor.selectedText().splitlines())))
-        editMenu.addAction("Join lines with semicolon of selected text", lambda:
-                           self.code_editor.replaceSelectedText("; ".join(
-                               self.code_editor.selectedText().splitlines())))
-        editMenu.addSeparator()
-        editMenu.addAction("Google selected text", lambda: open_new_tab(
+        sourceMenu.addAction(
+            "Base64 encode selected text", lambda:
+            self.code_editor.replaceSelectedText(str(b64encode(bytes(
+                self.code_editor.selectedText(), "utf-8")))))
+        sourceMenu.addAction(
+            "URL Safe Base64 encode selected text", lambda:
+            self.code_editor.replaceSelectedText(str(urlsafe_b64encode(bytes(
+                self.code_editor.selectedText(), "utf-8")))))
+        sourceMenu.addAction(
+            "URLencode selected text", lambda:
+            self.code_editor.replaceSelectedText(parse.quote_plus(
+                self.code_editor.selectedText(), encoding="utf-8")))
+        sourceMenu.addAction("Lorem Impsum...", lambda: self.code_editor.append(
+            "Lorem ipsum dolor sit amet, " + " ".join((
+                sample(IMPSUM, QInputDialog.getInt(
+                    self, __doc__, "<b>How many words ?:",
+                    len(IMPSUM) // 2, 1, len(IMPSUM))[0])))))
+        sourceMenu.addSeparator()
+        sourceMenu.addAction("Join lines of selected text", lambda:
+                             self.code_editor.replaceSelectedText("".join(
+                                 self.code_editor.selectedText().splitlines())))
+        sourceMenu.addAction(
+            "Join lines with semicolon of selected text", lambda:
+            self.code_editor.replaceSelectedText("; ".join(
+                self.code_editor.selectedText().splitlines())))
+        sourceMenu.addSeparator()
+        sourceMenu.addAction("Google selected text", lambda: open_new_tab(
             "https://www.google.com/search?q=" +
             self.code_editor.selectedText()))
-        editMenu.addSeparator()
-        editMenu.addAction("Clear all !", lambda: self.code_editor.clear())
-        editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
-        editMenu.addAction("Force ignore modifications", lambda:
-                           self.code_editor.setModified(False))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
