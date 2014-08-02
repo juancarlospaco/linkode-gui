@@ -326,6 +326,13 @@ class MainWindow(QMainWindow):
         windowMenu.addAction("Restore", lambda: self.showNormal())
         windowMenu.addAction("Center", lambda: self.center())
         windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
+        windowMenu.addSeparator()
+        windowMenu.addAction("Increase size", lambda:
+                             self.resize(self.size().width() * 1.25,
+                                 self.size().height() * 1.25))
+        windowMenu.addAction("Decrease size", lambda:
+                             self.resize(self.size().width() // 1.25,
+                                 self.size().height() // 1.25))
         helpMenu = self.menuBar().addMenu("&Help")
         helpMenu.addAction("About Qt 5", lambda: QMessageBox.aboutQt(self))
         helpMenu.addAction("About Python 3",
