@@ -353,8 +353,6 @@ class MainWindow(QMainWindow):
         insertSubmenu.addAction(
             "print('END METHOD / FUNCTION')", lambda:
             self.code_editor.append("print('END METHOD / FUNCTION')  #FIXME"))
-
-
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
@@ -381,6 +379,10 @@ class MainWindow(QMainWindow):
         windowMenu.addAction("Decrease size", lambda:
                              self.resize(self.size().width() // 1.25,
                                          self.size().height() // 1.25))
+        windowMenu.addAction("Minimum size", lambda:
+                             self.resize(self.minimumSize()))
+        windowMenu.addAction("Maximum size", lambda:
+                             self.resize(self.maximumSize()))
         helpMenu = self.menuBar().addMenu("&Help")
         helpMenu.addAction("About Qt 5", lambda: QMessageBox.aboutQt(self))
         helpMenu.addAction("About Python 3",
