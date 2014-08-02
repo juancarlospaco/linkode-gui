@@ -80,7 +80,7 @@ class Simpleditor(QsciScintilla):
         self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
         self.setCaretLineVisible(True)
         self.setMarginLineNumbers(1, True)
-        self.setMarginWidth(1, 35)
+        self.setMarginWidth(1, 50)
         self.setMarginSensitivity(1, True)
         self.setAutoCompletionCaseSensitivity(False)
         self.setAutoCompletionSource(QsciScintilla.AcsAll)
@@ -106,7 +106,7 @@ class Simpleditor(QsciScintilla):
         self.lexer.setPaper(QColor('#D5D8DB'))
         self.lexer.setDefaultPaper(QColor('#D5D8DB'))
         self.setLexer(self.lexer)
-        self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
+        # self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
         self.setEdgeMode(QsciScintilla.EdgeLine)
         self.ensureCursorVisible()
         self.setEdgeColumn(80)
@@ -188,6 +188,8 @@ class MainWindow(QMainWindow):
         fileMenu = self.menuBar().addMenu("&File")
         fileMenu.addAction(
             "Open", lambda: self.code_editor.setText(self.open()))
+        fileMenu.addAction("Open from Web URL",
+                           lambda: self.code_editor.setText(self.fetch()))
         fileMenu.addAction("Save", lambda: self.save(self.code_editor.text()))
         fileMenu.addSeparator()
         fileMenu.addAction("Exit", self.close)
@@ -531,6 +533,18 @@ class MainWindow(QMainWindow):
         if filename and path.isfile(filename):
             with open(filename, 'r') as file_to_read:
                 text = file_to_read.read()
+        if text:
+            return text
+
+    def fetch(self, url=None):
+        """Get a text file from a remote HTTP/HTTPS URL."""
+        if not url:
+            url = str(QInputDialog.getText(self, __doc__, "<b>HTTP URL?:")[0])
+        if url and url.lower().startswith("http"):
+            text = str(request.urlopen(url).read().decode("utf8"))
+        else:
+            QMessageBox.warning(self, __doc__, "<b>URL is not HTTP/HTTPS !")
+            text = None
         if text:
             return text
 
