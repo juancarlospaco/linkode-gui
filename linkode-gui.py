@@ -58,10 +58,10 @@ culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et ne
 harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum
 soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime te
 placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus ur
+Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus ur y
 saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. a
 Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis repellat.
-voluptatibus maiores alias consequatur aut perferendis doloribus asperiores et
+voluptatibus maiores alias consequatur aut perferendis doloribus asperiores et o
 """.strip().lower().split(" "))
 
 
@@ -207,6 +207,11 @@ class MainWindow(QMainWindow):
         editMenu.addAction("Clear all!", lambda: self.code_editor.clear())
         editMenu.addSeparator()
         editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
+        editMenu.addAction(
+            "Jump to Line...", lambda: self.code_editor.setCursorPosition(int(
+                QInputDialog.getInt(self, __doc__, "Line number ?:", 1, 1)[0]
+                ) - 1, 0))
+        editMenu.addSeparator()
         editMenu.addAction("Force ignore modifications", lambda:
                            self.code_editor.setModified(False))
         sourceMenu = self.menuBar().addMenu("&Source")
@@ -274,6 +279,11 @@ class MainWindow(QMainWindow):
         sourceMenu.addAction(
             "Replace Tabs with Spaces", lambda: self.code_editor.setText(
                 self.code_editor.text().replace("\t", "    ")))
+        sourceMenu.addAction(
+            "Invert HEX color on selected text", lambda:
+            self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().lower().translate(
+                    str.maketrans('0123456789abcdef', 'fedcba9876543210'))))
         sourceMenu.addSeparator()
         sourceMenu.addAction(
             "Insert Lorem Impsum...", lambda: self.code_editor.append(
@@ -329,10 +339,10 @@ class MainWindow(QMainWindow):
         windowMenu.addSeparator()
         windowMenu.addAction("Increase size", lambda:
                              self.resize(self.size().width() * 1.25,
-                                 self.size().height() * 1.25))
+                                         self.size().height() * 1.25))
         windowMenu.addAction("Decrease size", lambda:
                              self.resize(self.size().width() // 1.25,
-                                 self.size().height() // 1.25))
+                                         self.size().height() // 1.25))
         helpMenu = self.menuBar().addMenu("&Help")
         helpMenu.addAction("About Qt 5", lambda: QMessageBox.aboutQt(self))
         helpMenu.addAction("About Python 3",
