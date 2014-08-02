@@ -298,7 +298,6 @@ class MainWindow(QMainWindow):
             self.code_editor.replaceSelectedText("_".join((
                 sub(r'([A-Z])', r' \1',
                     self.code_editor.selectedText()).lower().split()))))
-
         sourceMenu.addSeparator()
         sourceMenu.addAction("Join lines of selected text", lambda:
                              self.code_editor.replaceSelectedText("".join(
@@ -311,7 +310,9 @@ class MainWindow(QMainWindow):
         sourceMenu.addAction("Google selected text", lambda: open_new_tab(
             "https://www.google.com/search?q=" +
             self.code_editor.selectedText()))
-
+        sourceMenu.addAction("PyPI Search selected text", lambda: open_new_tab(
+            "https://pypi.python.org/pypi?%3Aaction=search&term=" +
+            self.code_editor.selectedText()))
         insertMenu = self.menuBar().addMenu("&Insert")
         insertMenu.addAction(
             "Lorem Impsum...", lambda: self.code_editor.append(
