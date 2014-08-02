@@ -27,6 +27,7 @@ from configparser import ConfigParser
 from random import choice, sample
 from re import sub
 from base64 import b64encode, urlsafe_b64encode
+from datetime import datetime
 
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
@@ -35,7 +36,7 @@ from PyQt5.QtNetwork import QNetworkProxyFactory
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                              QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
                              QMainWindow, QMessageBox, QPushButton, QShortcut,
-                             QVBoxLayout, QWidget, QInputDialog)
+                             QVBoxLayout, QWidget, QInputDialog, QColorDialog)
 
 
 ###############################################################################
@@ -284,17 +285,20 @@ class MainWindow(QMainWindow):
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().lower().translate(
                     str.maketrans('0123456789abcdef', 'fedcba9876543210'))))
-        sourceMenu.addSeparator()
         sourceMenu.addAction(
-            "Insert Lorem Impsum...", lambda: self.code_editor.append(
-                "Lorem ipsum dolor sit amet, " + " ".join((sample(
-                    IMPSUM, QInputDialog.getInt(
-                        self, __doc__, "<b>How many words ?:",
-                        len(IMPSUM) // 2, 1, len(IMPSUM))[0]))) + "\n\n"))
-        sourceMenu.addAction("Insert horizontal line",
-                             lambda: self.code_editor.append("#" * 80 + "\n\n"))
-        sourceMenu.addAction("Insert Python SheBang",
-                             lambda: self.code_editor.append(SHEBANG))
+            "Split words from CamelCase", lambda:
+            self.code_editor.replaceSelectedText(sub(
+                r'([A-Z])', r' \1', self.code_editor.selectedText()).lower()))
+        sourceMenu.addAction(
+            "Merge words to CamelCase", lambda:
+            self.code_editor.replaceSelectedText("".join((
+                self.code_editor.selectedText().title().split()))))
+        sourceMenu.addAction(
+            "CamelCase to under_score", lambda:
+            self.code_editor.replaceSelectedText("_".join((
+                sub(r'([A-Z])', r' \1',
+                    self.code_editor.selectedText()).lower().split()))))
+
         sourceMenu.addSeparator()
         sourceMenu.addAction("Join lines of selected text", lambda:
                              self.code_editor.replaceSelectedText("".join(
@@ -307,16 +311,50 @@ class MainWindow(QMainWindow):
         sourceMenu.addAction("Google selected text", lambda: open_new_tab(
             "https://www.google.com/search?q=" +
             self.code_editor.selectedText()))
-        sourceSubmenu = sourceMenu.addMenu("Debugging tricks")
-        sourceSubmenu.addAction(
-            "Insert wdb.set_trace()", lambda:
+
+        insertMenu = self.menuBar().addMenu("&Insert")
+        insertMenu.addAction(
+            "Lorem Impsum...", lambda: self.code_editor.append(
+                "Lorem ipsum dolor sit amet, " + " ".join((sample(
+                    IMPSUM, QInputDialog.getInt(
+                        self, __doc__, "<b>How many words ?:",
+                        len(IMPSUM) // 2, 1, len(IMPSUM))[0]))) + "\n\n"))
+        insertMenu.addAction("Horizontal line",
+                             lambda: self.code_editor.append("#" * 80 + "\n\n"))
+        insertMenu.addAction("Python SheBang",
+                             lambda: self.code_editor.append(SHEBANG))
+        insertMenu.addAction(
+            "Date and Time", lambda: self.code_editor.append(
+                datetime.now().strftime(" %A %B %d-%m-%Y %H:%M:%S %p ")))
+        insertMenu.addAction(
+            "HEX Color from picker...", lambda: self.code_editor.append(
+                '"{}"'.format(QColorDialog.getColor().name())))
+        insertMenu.addSeparator()
+        insertSubmenu = insertMenu.addMenu("Debugging tricks")
+        insertSubmenu.addAction(
+            "wdb.set_trace()", lambda:
             self.code_editor.append("__import__('wdb').set_trace()  #FIXME"))
-        sourceSubmenu.addAction(
-            "Insert ipdb.set_trace()", lambda:
+        insertSubmenu.addAction(
+            "pudb.set_trace()", lambda:
+            self.code_editor.append("__import__('pudb').set_trace()  #FIXME"))
+        insertSubmenu.addAction(
+            "ipdb.set_trace()", lambda:
             self.code_editor.append("__import__('ipdb').set_trace()  #FIXME"))
-        sourceSubmenu.addAction(
-            "Insert pdb.set_trace()", lambda:
+        insertSubmenu.addAction(
+            "pdb.set_trace()", lambda:
             self.code_editor.append("__import__('pdb').set_trace()  #FIXME"))
+        insertSubmenu.addSeparator()
+        insertSubmenu.addAction(
+            "print('#' * 80)", lambda:
+            self.code_editor.append("print('#' * 80)  #FIXME"))
+        insertSubmenu.addAction(
+            "print('BEGIN METHOD / FUNCTION')", lambda:
+            self.code_editor.append("print('BEGIN METHOD / FUNCTION')  #FIXME"))
+        insertSubmenu.addAction(
+            "print('END METHOD / FUNCTION')", lambda:
+            self.code_editor.append("print('END METHOD / FUNCTION')  #FIXME"))
+
+
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
