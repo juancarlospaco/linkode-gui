@@ -31,26 +31,27 @@ __source__ = ('https://raw.githubusercontent.com/juancarlospaco/'
 
 # imports
 import sys
+from base64 import b64encode, urlsafe_b64encode
+from datetime import datetime
 from getopt import getopt
 from json import loads
-from os import path
+from os import nice, path
+from random import choice, sample
+from re import sub
 from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
-from configparser import ConfigParser
-from random import choice, sample
-from re import sub
-from base64 import b64encode, urlsafe_b64encode
-from datetime import datetime
 
+from configparser import ConfigParser
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtNetwork import QNetworkProxyFactory
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
-                             QGraphicsDropShadowEffect, QGridLayout, QGroupBox,
-                             QMainWindow, QMessageBox, QPushButton, QShortcut,
-                             QVBoxLayout, QWidget, QInputDialog, QColorDialog)
+from PyQt5.QtWidgets import (QApplication, QCheckBox, QColorDialog, QComboBox,
+                             QFileDialog, QGraphicsDropShadowEffect,
+                             QGridLayout, QGroupBox, QInputDialog, QMainWindow,
+                             QMessageBox, QPushButton, QShortcut, QVBoxLayout,
+                             QWidget)
 
 
 ###############################################################################
@@ -693,6 +694,7 @@ class MainWindow(QMainWindow):
 
 def main():
     ' Main Loop '
+    nice(19)
     application = QApplication(sys.argv)
     application.setApplicationName(__doc__.strip().lower())
     application.setOrganizationName(__doc__.strip().lower())
