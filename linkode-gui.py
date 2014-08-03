@@ -377,14 +377,16 @@ class MainWindow(QMainWindow):
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
         viewMenu.addAction(
             "Zoom To...", lambda: self.code_editor.zoomTo(QInputDialog.getInt(
-                None, __doc__, "<b>Zoom factor ?:", 1, 1, 9)[0]))
+                self, __doc__, "<b>Zoom factor ?:", 1, 1, 9)[0]))
         viewMenu.addAction("Zoom Reset", lambda: self.code_editor.zoomTo(1))
         self.menuBar().addMenu("&Config").addAction(
             "Open and load .editorconfig file",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
-        self.menuBar().addMenu("&Skin").addAction(
+        self.menuBar().addMenu("&Editor").addAction(
             "Open and load .color file",
             lambda: self.code_editor.set_color(self.get_color()))
+        self.menuBar().addMenu("&Skin").addAction(
+            "Open and load .qss file", lambda: self.setStyleSheet(self.skin()))
         windowMenu = self.menuBar().addMenu("&Window")
         windowMenu.addAction("Minimize", lambda: self.showMinimized())
         windowMenu.addAction("Maximize", lambda: self.showMaximized())
@@ -610,7 +612,7 @@ class MainWindow(QMainWindow):
         return path.isfile(filename)
 
     def open(self, filename=None):
-        """Open text from filename,if no text return None,if no filename ask"""
+        """Open text from filename,if no text return None,if no filename ask."""
         if not filename:
             filename = str(QFileDialog.getOpenFileName(
                 self, __doc__ + "- Open source code file", path.expanduser("~"),
@@ -630,6 +632,18 @@ class MainWindow(QMainWindow):
         else:
             QMessageBox.warning(self, __doc__, "<b>URL is not HTTP/HTTPS !")
             text = None
+        if text:
+            return text
+
+    def skin(self, filename=None):
+        """Open QSS from filename,if no QSS return None,if no filename ask."""
+        if not filename:
+            filename = str(QFileDialog.getOpenFileName(
+                self, __doc__ + "- Open QSS Skin file", path.expanduser("~"),
+                "CSS Cascading Style Sheet for Qt 5 (*.qss);;All (*.*)")[0])
+        if filename and path.isfile(filename):
+            with open(filename, 'r') as file_to_read:
+                text = file_to_read.read().strip()
         if text:
             return text
 
