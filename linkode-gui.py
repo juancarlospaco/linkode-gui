@@ -172,8 +172,8 @@ class Simpleditor(QsciScintilla):
         self.setMarginsForegroundColor(QColor(colors["fold-arrow"]))
         self.setCaretForegroundColor(QColor(colors["editor-text"]))
         self.setColor(QColor(colors["editor-text"]))
-        self.setMatchedBraceBackgroundColor(colors["brace"])
-        self.setIndentationGuidesForegroundColor(colors["extras"])
+        self.setMatchedBraceBackgroundColor(QColor(colors["brace"]))
+        self.setIndentationGuidesForegroundColor(QColor(colors["extras"]))
         self.setFoldMarginColors(
             QColor(colors["string2"]), QColor(colors["string"]))
         self.setSelectionBackgroundColor(
@@ -447,7 +447,7 @@ class MainWindow(QMainWindow):
         # Graphic effect
         self.glow = QGraphicsDropShadowEffect(self)
         self.glow.setOffset(0)
-        self.glow.setBlurRadius(75)
+        self.glow.setBlurRadius(50)
         self.glow.setColor(QColor(99, 255, 255))
         self.glow.setEnabled(False)
         self.code_editor.setGraphicsEffect(self.glow)
