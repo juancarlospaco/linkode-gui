@@ -196,7 +196,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(__doc__.strip().capitalize())
         self.setMinimumSize(480, 480)
         self.setMaximumSize(1024, 1024)
-        self.resize(self.minimumSize().width(), self.get_half_resolution()[1])
+        self.resize(1024, 768)
         self.setWindowIcon(QIcon.fromTheme("start-here"))
         self.center()
         QShortcut("Ctrl+q", self, activated=lambda: self.close())
