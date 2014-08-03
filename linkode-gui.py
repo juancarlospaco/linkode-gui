@@ -458,6 +458,7 @@ class MainWindow(QMainWindow):
         self.mini, self.clea = QCheckBox("Auto minimize"), QCheckBox("Clean up")
         self.clip = QCheckBox("Copy URL to clipboard")
         self.webo = QCheckBox("Open URL with browser")
+        self.auto = QCheckBox("Auto Save")
         self.bttn = QPushButton("Create Linkode")
         self.bttn.setToolTip(self.bttn.text())
         self.bttn.setStatusTip(self.bttn.toolTip())
@@ -476,6 +477,7 @@ class MainWindow(QMainWindow):
         self.mini.setToolTip("Automatically minimize the window after posting")
         self.clea.setToolTip("Clean up all the text, start new Linkode tree !")
         self.sheb.setToolTip("Add a Python SheBang as the first line of text")
+        self.auto.setToolTip("Auto Save to Linkode (60sec since last modified)")
         self.strp.setStatusTip(self.strp.toolTip())
         self.newl.setStatusTip(self.newl.toolTip())
         self.lowr.setStatusTip(self.lowr.toolTip())
@@ -484,11 +486,13 @@ class MainWindow(QMainWindow):
         self.mini.setStatusTip(self.mini.toolTip())
         self.clea.setStatusTip(self.clea.toolTip())
         self.sheb.setStatusTip(self.sheb.toolTip())
+        self.auto.setStatusTip(self.auto.toolTip())
         self.strp.setChecked(True)
         self.clip.setChecked(True)
         self.newl.setChecked(True)
         self.mini.setChecked(True)
         self.webo.setChecked(True)
+        self.auto.setChecked(True)
         group1_layout = QGridLayout(self.group1)
         group1_layout.addWidget(self.strp, 0, 0)
         group1_layout.addWidget(self.newl, 0, 1)
@@ -498,13 +502,18 @@ class MainWindow(QMainWindow):
         group1_layout.addWidget(self.sheb, 1, 1)
         group1_layout.addWidget(self.clea, 1, 2)
         group1_layout.addWidget(self.clip, 1, 3)
+        group1_layout.addWidget(self.auto, 2, 0)
         group1_layout.addWidget(self.text_type, 2, 2)
         group1_layout.addWidget(self.bttn, 2, 3)
 
     def post_to_linkode(self, text=None):
         """Take text str if any and process to post it to linkode,returns url"""
-        if not text or not len(text.strip()):
+        if not text or not len(text.strip()) or not self.auto.isChecked():
+            self.glow.setEnabled(False)
             return  # If we got no text or text is just spaces then do nothing
+        if text and len(text.strip()) < 5:  # No Spamm,show a message,but allow
+            QMessageBox.information(self, __doc__, """<b>Anti-Spamm!:<br>Your
+            text is less than 5 Characters long, please dont Spamm Linkode!.""")
         text = text.strip() if self.strp.isChecked() else text  # strip text
         text = text.lower() if self.lowr.isChecked() else text  # lowercase text
         text = text + "\n" if self.newl.isChecked() else text  # add new line
