@@ -139,7 +139,8 @@ network-receive network-transmit network-transmit-receive printer-printing
 security-medium security-low software-update-available software-update-urgent
 sync-synchronizing task-past-due user-available user-trash-full weather-fog
 weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
-weather-severe-alert weather-showers-scattered""".strip().lower().split(" "))))
+weather-severe-alert weather-showers-scattered
+""".strip().lower().replace("\n", " ").split(" "))))
 
 
 ###############################################################################
