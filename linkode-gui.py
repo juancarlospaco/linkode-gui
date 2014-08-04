@@ -41,6 +41,7 @@ from re import sub
 from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
+import codecs
 
 from configparser import ConfigParser
 from PyQt5.Qsci import QsciLexerPython, QsciScintilla
@@ -358,6 +359,10 @@ class MainWindow(QMainWindow):
             "URLencode selected text", lambda:
             self.code_editor.replaceSelectedText(parse.quote_plus(
                 self.code_editor.selectedText(), encoding="utf-8")))
+        sourceMenu.addAction(
+            "ROT13 encode selected text", lambda:
+            self.code_editor.replaceSelectedText(
+                codecs.encode(self.code_editor.selectedText(), "rot-13")))
         sourceMenu.addAction(
             "Replace Tabs with Spaces", lambda: self.code_editor.setText(
                 self.code_editor.text().replace("\t", "    ")))
