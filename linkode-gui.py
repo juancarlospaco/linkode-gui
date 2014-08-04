@@ -67,18 +67,79 @@ LINKODE_SUPPORTED_LANGUAGES = tuple(sorted((
     'Erlang', 'Go', 'HTML', 'HTMLmixed', 'Haskell', 'JSON', 'Java',
     'JavaScript', 'Lua', 'MarkDown', 'PHP', 'Perl', 'Plain Text', 'Python', 'R',
     'Ruby', 'Rust', 'Scala', 'Shell', 'XML', 'http', 'sql', 'tex')))
-IMPSUM = tuple("""at vero eos et accusamus et iusto odio dignissimos ducimus qui
-blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas
-molestias excepturi sint occaecati cupiditate non provident, similique sunt in e
-culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et ne
-harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum
-soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime te
-placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus ur y
-saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. a
-Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis repellat.
-voluptatibus maiores alias consequatur aut perferendis doloribus asperiores et o
-""".strip().lower().split(" "))
+IMPSUM = tuple(sorted(("""at vero eos et accusamus et iusto odio dignissimos
+ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos in e
+dolores et quas molestias excepturi sint occaecati cupiditate non provident,
+similique sunt culpa qui officia deserunt mollitia animi, id est laborum et
+dolorum fuga. Et ne harum quidem rerum facilis est et expedita distinctio. Nam
+libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo
+minus id quod maxime te placeat facere possimus, omnis voluptas assumenda est,
+omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut
+rerum necessitatibus ur y saepe eveniet ut et voluptates repudiandae sint et
+molestiae non recusandae. a Itaque earum rerum hic tenetur a sapiente delectus,
+ut aut reiciendis repellat. voluptatibus maiores alias consequatur aut
+perferendis doloribus asperiores et o""".strip().lower().split(" "))))
+STD_ICON_NAMES = tuple(sorted(("""address-book-new application-exit weather-snow
+appointment-new call-start call-stop contact-new document-new document-open
+document-open-recent document-page-setup document-print document-print-preview
+document-properties document-revert document-save document-save-as document-send
+edit-clear edit-copy edit-cut edit-delete edit-find edit-find-replace edit-paste
+edit-redo edit-select-all edit-undo folder-new format-indent-less user-idle
+format-indent-more format-justify-center format-justify-fill format-justify-left
+format-justify-right format-text-direction-ltr format-text-direction-rtl
+format-text-bold format-text-italic format-text-underline weather-showers
+format-text-strikethrough go-bottom go-down go-first go-home go-jump go-last
+go-next go-previous go-top go-up help-about help-contents help-faq insert-image
+insert-link insert-object insert-text list-add list-remove mail-forward
+mail-mark-important mail-mark-junk mail-mark-notjunk mail-mark-read user-offline
+mail-mark-unread mail-message-new mail-reply-all mail-reply-sender mail-send
+mail-send-receive media-eject media-playback-pause media-playback-start
+media-playback-stop media-record media-seek-backward media-seek-forward
+media-skip-backward media-skip-forward object-flip-horizontal weather-clear
+object-flip-vertical object-rotate-left object-rotate-right process-stop
+system-lock-screen system-log-out system-run system-search system-reboot
+system-shutdown tools-check-spelling view-fullscreen view-refresh view-restore
+view-sort-ascending view-sort-descending window-close window-new zoom-fit-best
+zoom-in zoom-original zoom-out process-working accessories-calculator user-away
+accessories-character-map accessories-dictionary accessories-text-editor
+help-browser multimedia-volume-control preferences-desktop-accessibility
+preferences-desktop-font preferences-desktop-keyboard preferences-desktop-locale
+preferences-desktop-multimedia preferences-desktop-screensaver sync-error
+preferences-desktop-theme preferences-desktop-wallpaper system-file-manager
+system-software-install system-software-update utilities-system-monitor
+utilities-terminal applications-accessories applications-development task-due
+applications-engineering applications-games applications-graphics printer-error
+applications-internet applications-multimedia applications-office network-idle
+applications-other applications-science applications-system security-high
+applications-utilities preferences-desktop preferences-desktop-peripherals
+preferences-desktop-personal preferences-other preferences-system folder-open
+preferences-system-network system-help audio-card audio-input-microphone battery
+camera-photo camera-video camera-web computer drive-harddisk drive-optical
+drive-removable-media input-gaming input-keyboard input-mouse input-tablet
+media-flash media-floppy media-optical media-tape modem multimedia-player
+network-wired network-wireless pda phone printer scanner video-display text-html
+emblem-default emblem-documents emblem-downloads emblem-favorite mail-signed
+emblem-important emblem-mail emblem-photos emblem-readonly emblem-shared
+emblem-symbolic-link emblem-synchronized emblem-system emblem-unreadable
+face-angel face-angry face-crying face-devilish face-embarrassed face-cool
+face-kiss face-laugh face-monkey face-plain face-raspberry face-sad face-sick
+face-smile face-smile-big face-smirk face-surprise face-tired face-uncertain
+face-wink face-worried application-x-executable audio-x-generic font-x-generic
+image-x-generic package-x-generic text-x-generic weather-storm network-server
+text-x-generic-template text-x-script video-x-generic x-office-address-book
+x-office-calendar x-office-document x-office-presentation x-office-spreadsheet
+folder folder-remote network-workgroup start-here user-bookmarks user-desktop
+user-home user-trash appointment-missed appointment-soon audio-volume-high
+audio-volume-low audio-volume-medium audio-volume-muted battery-caution
+battery-low dialog-error dialog-information dialog-password dialog-question
+dialog-warning folder-drag-accept folder-visiting image-loading image-missing
+mail-attachment mail-unread mail-read mail-replied mail-signed-verified
+media-playlist-repeat media-playlist-shuffle network-error network-offline
+network-receive network-transmit network-transmit-receive printer-printing
+security-medium security-low software-update-available software-update-urgent
+sync-synchronizing task-past-due user-available user-trash-full weather-fog
+weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
+weather-severe-alert weather-showers-scattered""".strip().lower().split(" "))))
 
 
 ###############################################################################
@@ -349,6 +410,8 @@ class MainWindow(QMainWindow):
         insertMenu.addAction(
             "HEX Color from picker...", lambda: self.code_editor.append(
                 '"{}"'.format(QColorDialog.getColor().name())))
+        insertMenu.addAction("Qt Standard Icon...",
+                             lambda: self.code_editor.append(self.std_icon()))
         insertMenu.addSeparator()
         insertSubmenu = insertMenu.addMenu("Debugging tricks")
         insertSubmenu.addAction(
@@ -590,6 +653,13 @@ class MainWindow(QMainWindow):
         if color_file and path.isfile(color_file):
             with open(color_file, 'r') as json_file:
                 return loads(json_file.read().strip())
+
+    def std_icon(self):
+        """Return a string with opendesktop standard icon name for Qt."""
+        icon, ok = QInputDialog.getItem(
+            self, __doc__, "<b>Choose an Icon name?:", STD_ICON_NAMES, 0, False)
+        if ok:
+            return 'PyQt5.QtGui.QIcon.fromTheme("{}")'.format(icon)
 
     def _set_guimode(self):
         """Switch between simple and full UX."""
