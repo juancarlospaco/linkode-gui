@@ -163,7 +163,7 @@ class Simpleditor(QsciScintilla):
 
     def __init__(self, parent=None):
         super(Simpleditor, self).__init__(parent)
-        self.setMinimumSize(200, 200)
+        self.setMinimumSize(100, 100)
         self.setEdgeMode(QsciScintilla.EdgeLine)
         self.setEdgeColumn(80)
         self.setFolding(QsciScintilla.BoxedTreeFoldStyle)
@@ -455,6 +455,16 @@ class MainWindow(QMainWindow):
         insertSubmenu.addAction(
             "print('END METHOD / FUNCTION')", lambda:
             self.code_editor.append("print('END METHOD / FUNCTION')  #FIXME"))
+        insertSubmenu.addSeparator()
+        insertSubmenu.addAction(
+            "Array(80).join('#'); debugger;", lambda:
+            self.code_editor.append("Array(80).join('#'); debugger;  //FIXME"))
+        insertSubmenu.addAction(
+            "console.log('BEGIN FUNCTION');", lambda:
+            self.code_editor.append("console.log('BEGIN FUNCTION');  //FIXME"))
+        insertSubmenu.addAction(
+            "console.log('END FUNCTION');", lambda:
+            self.code_editor.append("console.log('END FUNCTION');  //FIXME"))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
