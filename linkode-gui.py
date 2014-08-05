@@ -269,7 +269,7 @@ class MainWindow(QMainWindow):
         self.the_last_of_us = None  # revno revision number of the last linkode
         # self.statusBar().showMessage(__doc__.strip().capitalize())
         self.setWindowTitle(__doc__.strip().capitalize())
-        self.setMinimumSize(480, 480)
+        self.setMinimumSize(525, 400)
         self.setMaximumSize(1024, 1024)
         self.resize(1024, 768)
         self.setWindowIcon(QIcon.fromTheme("start-here"))
