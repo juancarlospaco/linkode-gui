@@ -78,8 +78,9 @@ minus id quod maxime te placeat facere possimus, omnis voluptas assumenda est,
 omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut
 rerum necessitatibus ur y saepe eveniet ut et voluptates repudiandae sint et
 molestiae non recusandae. a Itaque earum rerum hic tenetur a sapiente delectus,
-ut aut reiciendis repellat. voluptatibus maiores alias consequatur aut
-perferendis doloribus asperiores et o""".strip().lower().split(" "))))
+ut aut reiciendis repellat. voluptatibus maiores alias consequatur aut illum aut
+perferendis doloribus asperiores et o voluptate""".strip().lower().split(" "))))
+# http://standards.freedesktop.org/icon-naming-spec/icon-naming-spec-latest.html
 STD_ICON_NAMES = tuple(sorted(("""address-book-new application-exit weather-snow
 appointment-new call-start call-stop contact-new document-new document-open
 document-open-recent document-page-setup document-print document-print-preview
@@ -142,6 +143,16 @@ sync-synchronizing task-past-due user-available user-trash-full weather-fog
 weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
 weather-severe-alert weather-showers-scattered
 """.strip().lower().replace("\n", " ").split(" "))))
+# http://en.wikipedia.org/wiki/List_of_emoticons  (Good for testing user input)
+UNICODE_EMOTICONS = tuple("""😀 😁 😂 😃 😄 😅 😆 😇 😈 😉 😊 😋 😌 😍 😎 😏
+😐 😑 😒 😓 😔 😕 😖 😗 😘 😙 😚 😛 😜 😝 😞 😟 😠 😡 😢 😣 😥 😦 😧 😨 😩 😪 😫 😭 😮
+😯 😰 😱 😲 😳 😴 😵 😶 😷 😸 😹 😺 😻 😼 😽 😾 😿 🙀 ☸ ☹ ☺ ☻ ☼ ☽ ☾ ☿ ⚢ ♀ ♂ ☠
+☭ ☮ ♻ ☯ ♋ ❤ ❦ ❣ ♥ ♠ ♣ ♦ ✝ ❑ ❍ ❒ ✍ ✉ ☎ ✎ ✔ ✗ ✁ ✂ ✿ ❀ ❄ ✖ ✕ ✣ ✤ ✽ ✾
+★ ✩ ✶ ✷ ✸ ✴ ✻ ✫ ✬ ✪ ✡ ✵ ➔ ➙ ➘ ➚ ➺ ➜ ➽ ■ ▲ ▼ ● ಠ ∞ ♛ █ ▓ ▒ ░ ░ ░ ☃ 卍
+ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ ① ② ③ ④
+⑤ ⑥ ⑦ ⑧ ⑨ ® © ™ ⅛ ⅜ ⅝ ⅞ ½ ¾ ✌ ☜ ☞ Ω ℮ ♩ ♫ ♬ ♪ ♪ ♭ … ‼ ◑ ◐ ₤ ₧ € ‿ √ ∞
+∫ ≈ ≠ ≤ ≥ ← ↑ → ↓ ↔ ↕ ↖ ↗ ↘ ↙ ↯ ↰ ↱ ↲ ↳ ↴ ↵ ↶ ↷ ↺ ↻ ￣ 工 ⊍ ⊎ ⊖ ⊗ ⊘ ⊙
+⊚ ⊛ ⊜ ⊝ ⊞ ⊟ ⊠ ⊡ ツ ൠ ω""".strip().lower().replace("\n", " ").split(" "))
 
 
 ###############################################################################
@@ -152,7 +163,7 @@ class Simpleditor(QsciScintilla):
 
     def __init__(self, parent=None):
         super(Simpleditor, self).__init__(parent)
-        self.setMinimumSize(300, 300)
+        self.setMinimumSize(200, 200)
         self.setEdgeMode(QsciScintilla.EdgeLine)
         self.setEdgeColumn(80)
         self.setFolding(QsciScintilla.BoxedTreeFoldStyle)
@@ -418,6 +429,8 @@ class MainWindow(QMainWindow):
                 '"{}"'.format(QColorDialog.getColor().name())))
         insertMenu.addAction("Qt Standard Icon...",
                              lambda: self.code_editor.append(self.std_icon()))
+        insertMenu.addAction("Unicode Standard Emoticon...",
+                             lambda: self.code_editor.append(self.std_emote()))
         insertMenu.addSeparator()
         insertSubmenu = insertMenu.addMenu("Debugging tricks")
         insertSubmenu.addAction(
@@ -667,6 +680,13 @@ class MainWindow(QMainWindow):
         if ok:
             return 'PyQt5.QtGui.QIcon.fromTheme("{}")'.format(icon)
 
+    def std_emote(self):
+        """Return an unicode standard emoticon (test user input sanitization)"""
+        emoticon, ok = QInputDialog.getItem(
+            self, __doc__, "<b>Choose Emoticons?:", UNICODE_EMOTICONS, 0, False)
+        if ok:
+            return emoticon
+
     def _set_guimode(self):
         """Switch between simple and full UX."""
         for widget in (self.group1, self.statusBar(), self.menuBar()):
@@ -796,3 +816,4 @@ def main():
 
 if __name__ in '__main__':
     main()
+                                                               
