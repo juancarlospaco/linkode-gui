@@ -303,40 +303,40 @@ class MainWindow(QMainWindow):
             self, __doc__, self.count_code_lines(self.code_editor.text())))
         editMenu.addAction("Force ignore modifications", lambda:
                            self.code_editor.setModified(False))
-        sourceMenu = self.menuBar().addMenu("&Source")
-        sourceMenu.addAction(
+        formatMenu = self.menuBar().addMenu("&Format")
+        formatMenu.addAction(
             "lower selected text", lambda: self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().lower()))
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "UPPER selected text", lambda: self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().upper()))
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "Title selected text", lambda: self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().title()))
-        sourceMenu.addAction("Capitalize selected text", lambda:
+        formatMenu.addAction("Capitalize selected text", lambda:
                              self.code_editor.replaceSelectedText(
                                  self.code_editor.selectedText().capitalize()))
-        sourceMenu.addAction("Swapcase selected text", lambda:
+        formatMenu.addAction("Swapcase selected text", lambda:
                              self.code_editor.replaceSelectedText(
                                  self.code_editor.selectedText().swapcase()))
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "RaNdOmCaSe selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.ramdomcase(self.code_editor.selectedText)))
         # http://en.wikipedia.org/wiki/Letter_case
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "CamelCase selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().title().replace(" ", "")))
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "Snake_case selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "_")))
-        sourceMenu.addAction(
+        formatMenu.addAction(
             "Spinal-case selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "-")))
-        sourceMenu.addSeparator()
+        sourceMenu = self.menuBar().addMenu("&Source")
         sourceMenu.addAction(
             "Sort selected text", lambda: self.code_editor.replaceSelectedText(
                 "".join(sorted(self.code_editor.selectedText()))))
