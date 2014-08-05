@@ -144,9 +144,7 @@ weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
 weather-severe-alert weather-showers-scattered
 """.strip().lower().replace("\n", " ").split(" "))))
 # http://en.wikipedia.org/wiki/List_of_emoticons  (Good for testing user input)
-UNICODE_EMOTICONS = tuple("""😀 😁 😂 😃 😄 😅 😆 😇 😈 😉 😊 😋 😌 😍 😎 😏
-😐 😑 😒 😓 😔 😕 😖 😗 😘 😙 😚 😛 😜 😝 😞 😟 😠 😡 😢 😣 😥 😦 😧 😨 😩 😪 😫 😭 😮
-😯 😰 😱 😲 😳 😴 😵 😶 😷 😸 😹 😺 😻 😼 😽 😾 😿 🙀 ☸ ☹ ☺ ☻ ☼ ☽ ☾ ☿ ⚢ ♀ ♂ ☠
+UNICODE_EMOTICONS = tuple("""
 ☭ ☮ ♻ ☯ ♋ ❤ ❦ ❣ ♥ ♠ ♣ ♦ ✝ ❑ ❍ ❒ ✍ ✉ ☎ ✎ ✔ ✗ ✁ ✂ ✿ ❀ ❄ ✖ ✕ ✣ ✤ ✽ ✾
 ★ ✩ ✶ ✷ ✸ ✴ ✻ ✫ ✬ ✪ ✡ ✵ ➔ ➙ ➘ ➚ ➺ ➜ ➽ ■ ▲ ▼ ● ಠ ∞ ♛ █ ▓ ▒ ░ ░ ░ ☃ 卍
 ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ ① ② ③ ④
@@ -299,25 +297,22 @@ class MainWindow(QMainWindow):
         editMenu.addAction("Focus editor", lambda: self.code_editor.setFocus())
         editMenu.addAction(
             "Jump to Line...", lambda: self.code_editor.setCursorPosition(int(
-                QInputDialog.getInt(self, __doc__, "Line number ?:", 1, 1)[0]
-                ) - 1, 0))
+                QInputDialog.getInt(self, __doc__, "Line ?:", 1, 1)[0]) - 1, 0))
         editMenu.addSeparator()
         editMenu.addAction("Count code lines", lambda: QMessageBox.information(
-            self, __doc__, str(len(
-                [a for a in self.code_editor.text().splitlines()
-                 if a.strip() != "" and not a.startswith("#")]))))
+            self, __doc__, self.count_code_lines(self.code_editor.text())))
         editMenu.addAction("Force ignore modifications", lambda:
                            self.code_editor.setModified(False))
         sourceMenu = self.menuBar().addMenu("&Source")
-        sourceMenu.addAction("lower selected text", lambda:
-                             self.code_editor.replaceSelectedText(
-                                 self.code_editor.selectedText().lower()))
-        sourceMenu.addAction("UPPER selected text", lambda:
-                             self.code_editor.replaceSelectedText(
-                                 self.code_editor.selectedText().upper()))
-        sourceMenu.addAction("Title Word selected text", lambda:
-                             self.code_editor.replaceSelectedText(
-                                 self.code_editor.selectedText().title()))
+        sourceMenu.addAction(
+            "lower selected text", lambda: self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().lower()))
+        sourceMenu.addAction(
+            "UPPER selected text", lambda: self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().upper()))
+        sourceMenu.addAction(
+            "Title selected text", lambda: self.code_editor.replaceSelectedText(
+                self.code_editor.selectedText().title()))
         sourceMenu.addAction("Capitalize selected text", lambda:
                              self.code_editor.replaceSelectedText(
                                  self.code_editor.selectedText().capitalize()))
@@ -325,10 +320,9 @@ class MainWindow(QMainWindow):
                              self.code_editor.replaceSelectedText(
                                  self.code_editor.selectedText().swapcase()))
         sourceMenu.addAction(
-            "RaNdOmIzeCaSe selected text", lambda:
-            self.code_editor.replaceSelectedText(''.join(
-                choice((str.upper, str.lower))(x)
-                for x in self.code_editor.selectedText())))
+            "RaNdOmCaSe selected text", lambda:
+            self.code_editor.replaceSelectedText(
+                self.ramdomcase(self.code_editor.selectedText)))
         # http://en.wikipedia.org/wiki/Letter_case
         sourceMenu.addAction(
             "CamelCase selected text", lambda:
@@ -343,10 +337,10 @@ class MainWindow(QMainWindow):
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "-")))
         sourceMenu.addSeparator()
-        sourceMenu.addAction("Sort selected text", lambda:
-                             self.code_editor.replaceSelectedText("".join(
-                                 sorted(self.code_editor.selectedText()))))
-        sourceMenu.addAction("Reverse selected text", lambda:
+        sourceMenu.addAction(
+            "Sort selected text", lambda: self.code_editor.replaceSelectedText(
+                "".join(sorted(self.code_editor.selectedText()))))
+        sourceMenu.addAction("Reverse selected text", lambda:  # not same [::-1]
                              self.code_editor.replaceSelectedText("".join(
                                  reversed(self.code_editor.selectedText()))))
         sourceMenu.addAction(  # randomize the selected characters
@@ -405,18 +399,13 @@ class MainWindow(QMainWindow):
                 self.code_editor.selectedText().splitlines())))
         sourceMenu.addSeparator()
         sourceMenu.addAction("Google selected text", lambda: open_new_tab(
-            "https://www.google.com/search?q=" +
-            self.code_editor.selectedText()))
+            "https://google.com/search?q=" + self.code_editor.selectedText()))
         sourceMenu.addAction("PyPI Search selected text", lambda: open_new_tab(
             "https://pypi.python.org/pypi?%3Aaction=search&term=" +
             self.code_editor.selectedText()))
         insertMenu = self.menuBar().addMenu("&Insert")
         insertMenu.addAction(
-            "Lorem Impsum...", lambda: self.code_editor.append(
-                "Lorem ipsum dolor sit amet, " + " ".join((sample(
-                    IMPSUM, QInputDialog.getInt(
-                        self, __doc__, "<b>How many words ?:",
-                        len(IMPSUM) // 2, 1, len(IMPSUM))[0]))) + "\n\n"))
+            "Lorem Impsum...", lambda: self.code_editor.append(self.lorem()))
         insertMenu.addAction("Horizontal line",
                              lambda: self.code_editor.append("#" * 80 + "\n\n"))
         insertMenu.addAction("Python SheBang",
@@ -472,14 +461,15 @@ class MainWindow(QMainWindow):
             "Zoom To...", lambda: self.code_editor.zoomTo(QInputDialog.getInt(
                 self, __doc__, "<b>Zoom factor ?:", 1, 1, 9)[0]))
         viewMenu.addAction("Zoom Reset", lambda: self.code_editor.zoomTo(1))
-        self.menuBar().addMenu("&Config").addAction(
-            "Open and load .editorconfig file",
+        configMenu = self.menuBar().addMenu("&Config")
+        configMenu.addAction(
+            "Load .editorconfig settings",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
-        self.menuBar().addMenu("&Editor").addAction(
-            "Open and load .color file",
+        configMenu.addAction(
+            "Load .color Theme",
             lambda: self.code_editor.set_color(self.get_color()))
-        self.menuBar().addMenu("&Skin").addAction(
-            "Open and load .qss file", lambda: self.setStyleSheet(self.skin()))
+        configMenu.addAction(
+            "Load .qss Skin", lambda: self.setStyleSheet(self.skin()))
         windowMenu = self.menuBar().addMenu("&Window")
         windowMenu.addAction("Minimize", lambda: self.showMinimized())
         windowMenu.addAction("Maximize", lambda: self.showMaximized())
@@ -487,12 +477,12 @@ class MainWindow(QMainWindow):
         windowMenu.addAction("Center", lambda: self.center())
         windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         windowMenu.addSeparator()
-        windowMenu.addAction("Increase size", lambda:
-                             self.resize(self.size().width() * 1.25,
-                                         self.size().height() * 1.25))
+        windowMenu.addAction(
+            "Increase size", lambda:
+            self.resize(self.size().width() * 1.3, self.size().height() * 1.3))
         windowMenu.addAction("Decrease size", lambda:
-                             self.resize(self.size().width() // 1.25,
-                                         self.size().height() // 1.25))
+                             self.resize(self.size().width() // 1.3,
+                                         self.size().height() // 1.3))
         windowMenu.addAction("Minimum size", lambda:
                              self.resize(self.minimumSize()))
         windowMenu.addAction("Maximum size", lambda:
@@ -754,6 +744,32 @@ class MainWindow(QMainWindow):
         if text:
             return text
 
+    def count_code_lines(self, stringy=None):
+        """Count approximate lines of code on the text string,returns string."""
+        code_lines_count = "<b>Current text is Empty or has no Source Code !."
+        if stringy:
+            stringy_tuple = tuple(stringy.splitlines())
+            code = len([_ for _ in stringy_tuple
+                        if _.strip() != "" and not _.startswith("#")])
+            comments = len(stringy_tuple) - code
+            code_lines_count = """<b>Lines of Code:{}<br>Blanks and Comments:{}
+            <br><br>Total Lines:{}""".format(code, comments, len(stringy_tuple))
+        return code_lines_count
+
+    def lorem(self, how_many=None):
+        """Take an integer and return a Lorem Impsum string."""
+        lorem_impsum = "Lorem ipsum dolor sit amet, "
+        if not how_many:
+            how_many = QInputDialog.getInt(self, __doc__, "<b>How many words?:",
+                                           len(IMPSUM) // 2, 1, len(IMPSUM))[0]
+        lorem_impsum += " ".join((sample(IMPSUM, how_many))) + "\n\n"
+        return lorem_impsum
+
+    def ramdomcase(self, stringy=None):
+        """Return the same string but with random lettercase."""
+        if stringy and len(stringy) and isinstance(stringy, str):
+            return "".join(choice((str.upper, str.lower))(x) for x in stringy)
+
     def check_for_updates(self):
         """Method to check for updates from Git repo versus this version."""
         this_version = str(open(__file__).read())
@@ -826,4 +842,3 @@ def main():
 
 if __name__ in '__main__':
     main()
-                                                               
