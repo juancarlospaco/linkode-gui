@@ -672,7 +672,10 @@ class MainWindow(QMainWindow):
         self.post_to_linkode(self.code_editor.text())
 
     def get_editorconfig(self, config_file=None):
-        """Open, read and parse a .editorconfig file and return dict object."""
+        """Open, read and parse a .editorconfig file and return dict object.
+        >>> isinstance(MainWindow().get_editorconfig("./linkode.editorconfig"),\
+                       ConfigParser)
+        True"""
         if not config_file:
             config_file = str(QFileDialog.getOpenFileName(
                 self, __doc__ + " - Open .editorconfig !", path.expanduser("~"),
@@ -683,7 +686,9 @@ class MainWindow(QMainWindow):
             return config
 
     def get_color(self, color_file=None):
-        """Open, read and parse a .color file and return dict object."""
+        """Open, read and parse a .color file and return dict object.
+        >>> isinstance(MainWindow().get_color("./monokai.color"), dict)
+        True"""
         if not color_file:
             color_file = str(QFileDialog.getOpenFileName(
                 self, __doc__ + " - Open .color file !", path.expanduser("~"),
@@ -692,11 +697,14 @@ class MainWindow(QMainWindow):
             with open(color_file, 'r') as json_file:
                 return loads(json_file.read().strip())
 
-    def std_icon(self):
-        """Return a string with opendesktop standard icon name for Qt."""
-        icon, ok = QInputDialog.getItem(
-            self, __doc__, "<b>Choose an Icon name?:", STD_ICON_NAMES, 0, False)
-        if ok:
+    def std_icon(self, icon=None):
+        """Return a string with opendesktop standard icon name for Qt.
+        >>> MainWindow().std_icon('folder')
+        'PyQt5.QtGui.QIcon.fromTheme("folder")'"""
+        if not icon:
+            icon = QInputDialog.getItem(self, __doc__, "<b>Choose Icon name ?:",
+                                        STD_ICON_NAMES, 0, False)[0]
+        if icon:
             return 'PyQt5.QtGui.QIcon.fromTheme("{}")'.format(icon)
 
     def _set_guimode(self):
@@ -708,7 +716,9 @@ class MainWindow(QMainWindow):
         self.center()
 
     def save(self, text=None, filename=None):
-        """Save text as filename, if no text return False, if no filename ask"""
+        """Save text as filename, if no text return False, if no filename ask.
+        >>> MainWindow().save('X', __import__('tempfile').mkstemp(text=True)[1])
+        True"""
         if not text:
             return False
         if not filename:
@@ -721,7 +731,9 @@ class MainWindow(QMainWindow):
         return path.isfile(filename)
 
     def open(self, filename=None):
-        """Open text from filename,if no text return None,if no filename ask."""
+        """Open text from filename,if no text return None,if no filename ask.
+        >>> isinstance(MainWindow().open(__file__), str)
+        True"""
         if not filename:
             filename = str(QFileDialog.getOpenFileName(
                 self, __doc__ + "- Open source code file", path.expanduser("~"),
@@ -733,7 +745,9 @@ class MainWindow(QMainWindow):
             return text
 
     def fetch(self, url=None):
-        """Get a text file from a remote HTTP/HTTPS URL."""
+        """Get a text file from a remote HTTP/HTTPS URL.
+        >>> isinstance(MainWindow().fetch(__source__), str)
+        True"""
         if not url:
             url = str(QInputDialog.getText(self, __doc__, "<b>HTTP URL?:")[0])
         if url and url.lower().startswith("http"):
@@ -745,7 +759,9 @@ class MainWindow(QMainWindow):
             return text
 
     def skin(self, filename=None):
-        """Open QSS from filename,if no QSS return None,if no filename ask."""
+        """Open QSS from filename,if no QSS return None,if no filename ask.
+        >>> isinstance(MainWindow().skin('./styleshit.qss'), str)
+        True"""
         if not filename:
             filename = str(QFileDialog.getOpenFileName(
                 self, __doc__ + "- Open QSS Skin file", path.expanduser("~"),
@@ -757,7 +773,9 @@ class MainWindow(QMainWindow):
             return text
 
     def count_code_lines(self, stringy=None):
-        """Count approximate lines of code on the text string,returns string."""
+        """Count approximate lines of code on the text string,returns string.
+        >>> isinstance(MainWindow().count_code_lines('foo bar baz'), str)
+        True"""
         code_lines_count = "<b>Current text is Empty or has no Source Code !."
         if stringy:
             stringy_tuple = tuple(stringy.splitlines())
@@ -769,16 +787,20 @@ class MainWindow(QMainWindow):
         return code_lines_count
 
     def lorem(self, how_many=None):
-        """Take an integer and return a Lorem Impsum string."""
+        """Take an integer and return a Lorem Impsum string.
+        >>> isinstance(MainWindow().lorem(1), str)
+        True"""
         lorem_impsum = "Lorem ipsum dolor sit amet, "
-        if not how_many:
+        if not how_many or not isinstance(how_many, int):
             how_many = QInputDialog.getInt(self, __doc__, "<b>How many words?:",
                                            len(IMPSUM) // 2, 1, len(IMPSUM))[0]
         lorem_impsum += " ".join((sample(IMPSUM, how_many))) + "\n\n"
         return lorem_impsum
 
     def ramdomcase(self, stringy=None):
-        """Return the same string but with random lettercase."""
+        """Return the same string but with random lettercase.
+        >>> isinstance(MainWindow().ramdomcase('foo bar baz'), str)
+        True"""
         if stringy and len(stringy) and isinstance(stringy, str):
             return "".join(choice((str.upper, str.lower))(x) for x in stringy)
 
@@ -793,22 +815,28 @@ class MainWindow(QMainWindow):
         return QMessageBox.information(self, __doc__.title(), "<b>" + m)
 
     def center(self):
-        """Center the Window on the Current Screen,with Multi-Monitor support"""
+        """Center the Window on the Current Screen,with Multi-Monitor support.
+        >>> MainWindow().center()
+        True"""
         window_geometry = self.frameGeometry()
         mousepointer_position = QApplication.desktop().cursor().pos()
         screen = QApplication.desktop().screenNumber(mousepointer_position)
         centerPoint = QApplication.desktop().screenGeometry(screen).center()
         window_geometry.moveCenter(centerPoint)
-        self.move(window_geometry.topLeft())
+        return bool(not self.move(window_geometry.topLeft()))
 
     def move_to_mouse_position(self):
-        """Center the Window on the Current Mouse position."""
+        """Center the Window on the Current Mouse position.
+        >>> MainWindow().move_to_mouse_position()
+        True"""
         window_geometry = self.frameGeometry()
         window_geometry.moveCenter(QApplication.desktop().cursor().pos())
-        self.move(window_geometry.topLeft())
+        return bool(not self.move(window_geometry.topLeft()))
 
     def get_half_resolution(self):
-        """Get half of the screen resolution."""
+        """Get half of the screen resolution.
+        >>> isinstance(MainWindow().get_half_resolution(), tuple)
+        True"""
         mouse_pointer_position = QApplication.desktop().cursor().pos()
         screen = QApplication.desktop().screenNumber(mouse_pointer_position)
         widt = QApplication.desktop().screenGeometry(screen).size().width() // 2
@@ -835,18 +863,23 @@ def main():
     application.setOrganizationDomain(__doc__.strip())
     application.setWindowIcon(QIcon.fromTheme("start-here"))
     try:
-        opts, args = getopt(sys.argv[1:], 'hv', ('version', 'help'))
+        opts, args = getopt(sys.argv[1:], 'hvt', ('version', 'help', 'tests'))
     except:
         pass
     for o, v in opts:
         if o in ('-h', '--help'):
             print(''' Usage:
                   -h, --help        Show help informations and exit.
-                  -v, --version     Show version information and exit.''')
+                  -v, --version     Show version information and exit.
+                  -t, --tests       Run Unit Tests on DocTests if any.''')
             return sys.exit(1)
         elif o in ('-v', '--version'):
             print(__version__)
             return sys.exit(1)
+        elif o in ('-t', '--tests'):
+            from doctest import testmod
+            testmod(verbose=True, report=True, exclude_empty=True)
+            exit(1)
     mainwindow = MainWindow()
     mainwindow.show()
     sys.exit(application.exec_())
