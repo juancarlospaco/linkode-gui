@@ -874,10 +874,10 @@ def main():
                   -t, --tests       Run Unit Tests on DocTests if any.''')
             return sys.exit(1)
         elif o in ('-v', '--version'):
-            print(__version__)  # version of the software
+            print(__version__)
             return sys.exit(1)
         elif o in ('-t', '--tests'):
-            from doctest import testmod  # built-in unit tests on docstrings
+            from doctest import testmod
             testmod(verbose=True, report=True, exclude_empty=True)
             exit(1)
     mainwindow = MainWindow()
