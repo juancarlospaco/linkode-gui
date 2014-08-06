@@ -144,13 +144,11 @@ weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
 weather-severe-alert weather-showers-scattered
 """.strip().lower().replace("\n", " ").split(" "))))
 # http://en.wikipedia.org/wiki/List_of_emoticons  (Good for testing user input)
-UNICODE_EMOTICONS = tuple("""
-☭ ☮ ♻ ☯ ♋ ❤ ❦ ❣ ♥ ♠ ♣ ♦ ✝ ❑ ❍ ❒ ✍ ✉ ☎ ✎ ✔ ✗ ✁ ✂ ✿ ❀ ❄ ✖ ✕ ✣ ✤ ✽ ✾
-★ ✩ ✶ ✷ ✸ ✴ ✻ ✫ ✬ ✪ ✡ ✵ ➔ ➙ ➘ ➚ ➺ ➜ ➽ ■ ▲ ▼ ● ಠ ∞ ♛ █ ▓ ▒ ░ ░ ░ ☃ 卍
-ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ ① ② ③ ④
-⑤ ⑥ ⑦ ⑧ ⑨ ® © ™ ⅛ ⅜ ⅝ ⅞ ½ ¾ ✌ ☜ ☞ Ω ℮ ♩ ♫ ♬ ♪ ♪ ♭ … ‼ ◑ ◐ ₤ ₧ € ‿ √ ∞
-∫ ≈ ≠ ≤ ≥ ← ↑ → ↓ ↔ ↕ ↖ ↗ ↘ ↙ ↯ ↰ ↱ ↲ ↳ ↴ ↵ ↶ ↷ ↺ ↻ ￣ 工 ⊍ ⊎ ⊖ ⊗ ⊘ ⊙
-⊚ ⊛ ⊜ ⊝ ⊞ ⊟ ⊠ ⊡ ツ ൠ ω""".strip().lower().replace("\n", " ").split(" "))
+UNICODE_EMOTICONS = tuple(iter("""☸☹☺☻☼☽☾☿⚢♀♂☠☭☮♻☯♋❤❦❣♥♠♣♦✝❑❍❒✍✉☎
+✎✔✗✁✂✿❀❄✖✕✣✤✽✾★✩✶✷✸✴✻✫✬✪✡✵➔➙➘➚➺➜➽■▲▼●ಠ∞♛█▓▒░░░☃卍ⓐⓑⓒⓓⓔⓕⓖⓗⓘ
+ⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ①②③④⑤⑥⑦⑧⑨®©™⅛⅜⅝⅞½¾✌☜☞Ω℮♩♫♬♪♪♭…‼◑◐₤₧€‿√∞∫
+≈≠≤≥←↑→↓↔↕↖↗↘↙↯↰↱↲↳↴↵↶↷↺↻￣工⊍⊎⊖⊗⊘⊙⊚⊛⊜⊝⊞⊟⊠⊡ツൠω
+""".strip().lower().replace("\n", "")))  # needs better UI widget,but not Spammy
 
 
 ###############################################################################
@@ -405,55 +403,84 @@ class MainWindow(QMainWindow):
             self.code_editor.selectedText()))
         insertMenu = self.menuBar().addMenu("&Insert")
         insertMenu.addAction(
-            "Lorem Impsum...", lambda: self.code_editor.append(self.lorem()))
+            "Lorem Impsum...", lambda: self.code_editor.insert(self.lorem()))
         insertMenu.addAction("Horizontal line",
-                             lambda: self.code_editor.append("#" * 80 + "\n\n"))
+                             lambda: self.code_editor.insert("#" * 80 + "\n\n"))
         insertMenu.addAction("Python SheBang",
-                             lambda: self.code_editor.append(SHEBANG))
+                             lambda: self.code_editor.insert(SHEBANG))
         insertMenu.addAction(
-            "Date and Time", lambda: self.code_editor.append(
+            "Date and Time", lambda: self.code_editor.insert(
                 datetime.now().strftime(" %A %B %d-%m-%Y %H:%M:%S %p ")))
         insertMenu.addAction(
-            "HEX Color from picker...", lambda: self.code_editor.append(
+            "HEX Color from picker...", lambda: self.code_editor.insert(
                 '"{}"'.format(QColorDialog.getColor().name())))
         insertMenu.addAction("Qt Standard Icon...",
-                             lambda: self.code_editor.append(self.std_icon()))
+                             lambda: self.code_editor.insert(self.std_icon()))
         insertMenu.addAction("Unicode Standard Emoticon...",
-                             lambda: self.code_editor.append(self.std_emote()))
+                             lambda: self.code_editor.insert(self.std_emote()))
         insertMenu.addSeparator()
         insertSubmenu = insertMenu.addMenu("Debugging tricks")
         insertSubmenu.addAction(
             "wdb.set_trace()", lambda:
-            self.code_editor.append("__import__('wdb').set_trace()  #FIXME"))
+            self.code_editor.insert("__import__('wdb').set_trace()  #FIXME"))
         insertSubmenu.addAction(
             "pudb.set_trace()", lambda:
-            self.code_editor.append("__import__('pudb').set_trace()  #FIXME"))
+            self.code_editor.insert("__import__('pudb').set_trace()  #FIXME"))
         insertSubmenu.addAction(
             "ipdb.set_trace()", lambda:
-            self.code_editor.append("__import__('ipdb').set_trace()  #FIXME"))
+            self.code_editor.insert("__import__('ipdb').set_trace()  #FIXME"))
         insertSubmenu.addAction(
             "pdb.set_trace()", lambda:
-            self.code_editor.append("__import__('pdb').set_trace()  #FIXME"))
+            self.code_editor.insert("__import__('pdb').set_trace()  #FIXME"))
         insertSubmenu.addSeparator()
         insertSubmenu.addAction(
             "print('#' * 80)", lambda:
-            self.code_editor.append("print('#' * 80)  #FIXME"))
+            self.code_editor.insert("print('#' * 80)  #FIXME"))
         insertSubmenu.addAction(
             "print('BEGIN METHOD / FUNCTION')", lambda:
-            self.code_editor.append("print('BEGIN METHOD / FUNCTION')  #FIXME"))
+            self.code_editor.insert("print('BEGIN METHOD / FUNCTION')  #FIXME"))
         insertSubmenu.addAction(
             "print('END METHOD / FUNCTION')", lambda:
-            self.code_editor.append("print('END METHOD / FUNCTION')  #FIXME"))
+            self.code_editor.insert("print('END METHOD / FUNCTION')  #FIXME"))
         insertSubmenu.addSeparator()
         insertSubmenu.addAction(
             "Array(80).join('#'); debugger;", lambda:
-            self.code_editor.append("Array(80).join('#'); debugger;  //FIXME"))
+            self.code_editor.insert("Array(80).join('#'); debugger;  //FIXME"))
         insertSubmenu.addAction(
             "console.log('BEGIN FUNCTION');", lambda:
-            self.code_editor.append("console.log('BEGIN FUNCTION');  //FIXME"))
+            self.code_editor.insert("console.log('BEGIN FUNCTION');  //FIXME"))
         insertSubmenu.addAction(
             "console.log('END FUNCTION');", lambda:
-            self.code_editor.append("console.log('END FUNCTION');  //FIXME"))
+            self.code_editor.insert("console.log('END FUNCTION');  //FIXME"))
+        insertSubmenu2 = insertMenu.addMenu("Code Comments")
+        insertSubmenu2.addAction("FIXME", lambda:
+                                 self.code_editor.insert("  #FIXME "))
+        insertSubmenu2.addAction("TODO", lambda:
+                                 self.code_editor.insert("  #TODO "))
+        insertSubmenu2.addAction("OPTIMIZE", lambda:
+                                 self.code_editor.insert("  #OPTIMIZE "))
+        insertSubmenu2.addSeparator()
+        insertSubmenu2.addAction("lint:enable", lambda:
+                                 self.code_editor.insert("  # lint:enable"))
+        insertSubmenu2.addAction("lint:disable", lambda:
+                                 self.code_editor.insert("  # lint:disable"))
+        insertSubmenu2.addAction("lint:ok", lambda:
+                                 self.code_editor.insert("  # lint:ok"))
+        insertSubmenu2.addSeparator()
+        insertSubmenu2.addAction("isort:skip", lambda:
+                                 self.code_editor.insert("  # isort:skip"))
+        insertSubmenu2.addAction("isort:skip_file", lambda:
+                                 self.code_editor.insert("  # isort:skip_file"))
+        insertSubmenu2.addSeparator()
+        insertSubmenu2.addAction("pylint:disable", lambda:
+                                 self.code_editor.insert("  # pylint:disable"))
+        insertSubmenu2.addAction("pylint:enable", lambda:
+                                 self.code_editor.insert("  # pylint:enable"))
+        insertSubmenu2.addSeparator()
+        insertSubmenu2.addAction("pragma: no cover", lambda:
+                                 self.code_editor.insert("  # pragma:no cover"))
+        insertSubmenu2.addAction("pyflakes:ignore", lambda:
+                                 self.code_editor.insert("  # pyflakes:ignore"))
         viewMenu = self.menuBar().addMenu("&View")
         viewMenu.addAction("Zoom In", lambda: self.code_editor.zoomIn())
         viewMenu.addAction("Zoom Out", lambda: self.code_editor.zoomOut())
@@ -463,7 +490,7 @@ class MainWindow(QMainWindow):
         viewMenu.addAction("Zoom Reset", lambda: self.code_editor.zoomTo(1))
         configMenu = self.menuBar().addMenu("&Config")
         configMenu.addAction(
-            "Load .editorconfig settings",
+            "Load .editorconfig Settings",
             lambda: self.code_editor.set_editorconfig(self.get_editorconfig()))
         configMenu.addAction(
             "Load .color Theme",
