@@ -6,8 +6,9 @@ python:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - sudo apt-add-repository --yes --enable-source ppa:ubuntu-sdk-team/ppa
   - sudo apt-get update -qqm
-  - sudo apt-get install -qqm wget build-essential python3-dev python-dev
+  - sudo apt-get install -qqm wget build-essential python3-dev python-dev qtdeclarative5-dev
   # install SIP
   - cd /tmp
   #- wget --quiet --output-document=sip.tar.gz http://downloads.sourceforge.net/project/pyqt/sip/sip-4.15.3/sip-4.15.3.tar.gz
