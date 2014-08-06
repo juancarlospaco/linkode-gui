@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
         formatMenu.addAction(
             "RaNdOmCaSe selected text", lambda:
             self.code_editor.replaceSelectedText(
-                self.ramdomcase(self.code_editor.selectedText)))
+                self.ramdomcase(self.code_editor.selectedText())))
         # http://en.wikipedia.org/wiki/Letter_case
         formatMenu.addAction(
             "CamelCase selected text", lambda:
