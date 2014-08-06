@@ -143,12 +143,6 @@ sync-synchronizing task-past-due user-available user-trash-full weather-fog
 weather-clear-night weather-few-clouds weather-few-clouds-night weather-overcast
 weather-severe-alert weather-showers-scattered
 """.strip().lower().replace("\n", " ").split(" "))))
-# http://en.wikipedia.org/wiki/List_of_emoticons  (Good for testing user input)
-UNICODE_EMOTICONS = tuple(iter("""☸☹☺☻☼☽☾☿⚢♀♂☠☭☮♻☯♋❤❦❣♥♠♣♦✝❑❍❒✍✉☎
-✎✔✗✁✂✿❀❄✖✕✣✤✽✾★✩✶✷✸✴✻✫✬✪✡✵➔➙➘➚➺➜➽■▲▼●ಠ∞♛█▓▒░░░☃卍ⓐⓑⓒⓓⓔⓕⓖⓗⓘ
-ⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ①②③④⑤⑥⑦⑧⑨®©™⅛⅜⅝⅞½¾✌☜☞Ω℮♩♫♬♪♪♭…‼◑◐₤₧€‿√∞∫
-≈≠≤≥←↑→↓↔↕↖↗↘↙↯↰↱↲↳↴↵↶↷↺↻￣工⊍⊎⊖⊗⊘⊙⊚⊛⊜⊝⊞⊟⊠⊡ツൠω
-""".strip().lower().replace("\n", "")))  # needs better UI widget,but not Spammy
 
 
 ###############################################################################
@@ -416,8 +410,6 @@ class MainWindow(QMainWindow):
                 '"{}"'.format(QColorDialog.getColor().name())))
         insertMenu.addAction("Qt Standard Icon...",
                              lambda: self.code_editor.insert(self.std_icon()))
-        insertMenu.addAction("Unicode Standard Emoticon...",
-                             lambda: self.code_editor.insert(self.std_emote()))
         insertMenu.addSeparator()
         insertSubmenu = insertMenu.addMenu("Debugging tricks")
         insertSubmenu.addAction(
@@ -706,13 +698,6 @@ class MainWindow(QMainWindow):
             self, __doc__, "<b>Choose an Icon name?:", STD_ICON_NAMES, 0, False)
         if ok:
             return 'PyQt5.QtGui.QIcon.fromTheme("{}")'.format(icon)
-
-    def std_emote(self):
-        """Return an unicode standard emoticon (test user input sanitization)"""
-        emoticon, ok = QInputDialog.getItem(
-            self, __doc__, "<b>Choose Emoticons?:", UNICODE_EMOTICONS, 0, False)
-        if ok:
-            return emoticon
 
     def _set_guimode(self):
         """Switch between simple and full UX."""
