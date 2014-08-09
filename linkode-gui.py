@@ -41,6 +41,8 @@ from re import sub
 from subprocess import call
 from urllib import parse, request
 from webbrowser import open_new_tab
+from string import ascii_letters
+from tempfile import mkstemp
 import codecs
 
 from configparser import ConfigParser
@@ -268,9 +270,12 @@ class MainWindow(QMainWindow):
         fileMenu = self.menuBar().addMenu("&File")
         fileMenu.addAction(
             "Open", lambda: self.code_editor.setText(self.open()))
+        fileMenu.addAction("Save", lambda: self.save(self.code_editor.text()))
+        fileMenu.addSeparator()
         fileMenu.addAction("Open from Web URL",
                            lambda: self.code_editor.setText(self.fetch()))
-        fileMenu.addAction("Save", lambda: self.save(self.code_editor.text()))
+        fileMenu.addAction("Preview on Web Browser",
+                           lambda: self.previeweb(self.code_editor.text()))
         fileMenu.addSeparator()
         fileMenu.addAction("Exit", self.close)
         editMenu = self.menuBar().addMenu("&Edit")
@@ -328,6 +333,20 @@ class MainWindow(QMainWindow):
             "Spinal-case selected text", lambda:
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().replace(" ", "-")))
+        formatMenu.addSeparator()
+        formatMenu.addAction(
+            "Split words from CamelCase", lambda:
+            self.code_editor.replaceSelectedText(sub(
+                r'([A-Z])', r' \1', self.code_editor.selectedText()).lower()))
+        formatMenu.addAction(
+            "Merge words to CamelCase", lambda:
+            self.code_editor.replaceSelectedText("".join((
+                self.code_editor.selectedText().title().split()))))
+        formatMenu.addAction(
+            "CamelCase to under_score", lambda:
+            self.code_editor.replaceSelectedText("_".join((
+                sub(r'([A-Z])', r' \1',
+                    self.code_editor.selectedText()).lower().split()))))
         sourceMenu = self.menuBar().addMenu("&Source")
         sourceMenu.addAction(
             "Sort selected text", lambda: self.code_editor.replaceSelectedText(
@@ -368,19 +387,6 @@ class MainWindow(QMainWindow):
             self.code_editor.replaceSelectedText(
                 self.code_editor.selectedText().lower().translate(
                     str.maketrans('0123456789abcdef', 'fedcba9876543210'))))
-        sourceMenu.addAction(
-            "Split words from CamelCase", lambda:
-            self.code_editor.replaceSelectedText(sub(
-                r'([A-Z])', r' \1', self.code_editor.selectedText()).lower()))
-        sourceMenu.addAction(
-            "Merge words to CamelCase", lambda:
-            self.code_editor.replaceSelectedText("".join((
-                self.code_editor.selectedText().title().split()))))
-        sourceMenu.addAction(
-            "CamelCase to under_score", lambda:
-            self.code_editor.replaceSelectedText("_".join((
-                sub(r'([A-Z])', r' \1',
-                    self.code_editor.selectedText()).lower().split()))))
         sourceMenu.addSeparator()
         sourceMenu.addAction("Join lines of selected text", lambda:
                              self.code_editor.replaceSelectedText("".join(
@@ -395,11 +401,17 @@ class MainWindow(QMainWindow):
         sourceMenu.addAction("PyPI Search selected text", lambda: open_new_tab(
             "https://pypi.python.org/pypi?%3Aaction=search&term=" +
             self.code_editor.selectedText()))
+        sourceMenu.addAction(
+            "StackOverflow Search selected text", lambda: open_new_tab(
+                "https://stackoverflow.com/search?q=" +
+                self.code_editor.selectedText()))
         insertMenu = self.menuBar().addMenu("&Insert")
         insertMenu.addAction(
             "Lorem Impsum...", lambda: self.code_editor.insert(self.lorem()))
         insertMenu.addAction("Horizontal line",
                              lambda: self.code_editor.insert("#" * 80 + "\n\n"))
+        insertMenu.addAction("Comment Title", lambda:
+                             self.code_editor.insert(self.commentitle()))
         insertMenu.addAction("Python SheBang",
                              lambda: self.code_editor.insert(SHEBANG))
         insertMenu.addAction(
@@ -410,6 +422,8 @@ class MainWindow(QMainWindow):
                 '"{}"'.format(QColorDialog.getColor().name())))
         insertMenu.addAction("Qt Standard Icon...",
                              lambda: self.code_editor.insert(self.std_icon()))
+        insertMenu.addAction("Random Password...",
+                             lambda: self.code_editor.insert(self.rnd_pass()))
         insertMenu.addSeparator()
         insertSubmenu = insertMenu.addMenu("Debugging tricks")
         insertSubmenu.addAction(
@@ -796,6 +810,39 @@ class MainWindow(QMainWindow):
                                            len(IMPSUM) // 2, 1, len(IMPSUM))[0]
         lorem_impsum += " ".join((sample(IMPSUM, how_many))) + "\n\n"
         return lorem_impsum
+
+    def rnd_pass(self, length=None):
+        """Take an Int and return a random password string of that length.
+        >>> isinstance(MainWindow().rnd_pass(8), str)
+        True"""
+        if not length:
+            length = QInputDialog.getInt(self, __doc__, "<b>Character length?:",
+                                         8, 4, len(ascii_letters))[0]
+        if length and length > 2:
+            return "".join((sample(ascii_letters, length)))
+
+    def commentitle(self, text=None):
+        """Make a named comment title.
+        >>> isinstance(MainWindow().commentitle('test'), str)
+        True"""
+        comment_title = "#" * 80 + "\n#    "
+        if not text or not len(text.strip()):
+            text = str(QInputDialog.getText(self, __doc__, "<b>Title ?:")[0])
+        if text:
+            comment_title += text
+            comment_title = comment_title + "\n"
+            comment_title = comment_title + "#" * 80
+            return comment_title
+
+    def previeweb(self, text=None):
+        """Take a str and write to tempfile to preview it on web browsers."""
+        if not text or not len(text.strip()):
+            return
+        temp_filename = mkstemp(suffix='.html')[1]
+        with open(temp_filename, 'w') as temp_file_to_write:
+            temp_file_to_write.write(text)
+        open_new_tab("file://" + temp_filename)
+        return temp_filename
 
     def ramdomcase(self, stringy=None):
         """Return the same string but with random lettercase.
