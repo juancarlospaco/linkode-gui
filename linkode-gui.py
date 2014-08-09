@@ -56,7 +56,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QColorDialog, QComboBox,
                              QFileDialog, QGraphicsDropShadowEffect,
                              QGridLayout, QGroupBox, QInputDialog, QMainWindow,
                              QMessageBox, QPushButton, QShortcut, QVBoxLayout,
-                             QWidget)
+                             QWidget, QFontDialog)
 
 
 ###############################################################################
@@ -427,6 +427,8 @@ class MainWindow(QMainWindow):
         insertMenu.addAction(
             "HEX Color from picker...", lambda: self.code_editor.insert(
                 '"{}"'.format(QColorDialog.getColor().name())))
+        insertMenu.addAction("CSS Font from picker...", lambda:
+                             self.code_editor.insert(self.cssfont()))
         insertMenu.addAction("Qt Standard Icon...",
                              lambda: self.code_editor.insert(self.std_icon()))
         insertMenu.addAction("Random Password...",
@@ -527,6 +529,9 @@ class MainWindow(QMainWindow):
                              self.resize(self.minimumSize()))
         windowMenu.addAction("Maximum size", lambda:
                              self.resize(self.maximumSize()))
+        windowMenu.addSeparator()
+        windowMenu.addAction("Set Font Family...", lambda:
+                             self.setFont(QFontDialog.getFont()[0]))
         helpMenu = self.menuBar().addMenu("&Help")
         helpMenu.addAction("About Qt 5", lambda: QMessageBox.aboutQt(self))
         helpMenu.addAction("About Python 3",
@@ -880,6 +885,24 @@ class MainWindow(QMainWindow):
             temp_file_to_write.write(text)
         open_new_tab("file://" + temp_filename)
         return temp_filename
+
+    def cssfont(self):
+        """Return CSS from a font picker(HTML and X11 fonts arent compatible)"""
+        font = QFontDialog.getFont()[0]
+        css = "font-family: '{}';\nfont-size: {}px;\n".format(font.family(),
+                                                              font.pointSize())
+        font_weight = font.styleName().split(" ")[0].lower()
+        if font_weight in ('normal', 'bold', 'bolder', 'light', 'lighter'):
+            css += "font-weight: {};\n".format(font_weight)
+        if len(font.styleName().split(" ")) > 1:
+            font_style = font.styleName().split(" ")[1].lower()
+            if font_style in ('normal', 'italic', 'oblique'):
+                css += "font-style: {};\n".format(font_style)
+        if font.underline():
+            css += "text-decoration: underline;\n"
+        if font.strikeOut():
+            css += "text-decoration: line-through;\n"
+        return css.strip()
 
     def ramdomcase(self, stringy=None):
         """Return the same string but with random lettercase.
