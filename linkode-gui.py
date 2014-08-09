@@ -43,6 +43,8 @@ from urllib import parse, request
 from webbrowser import open_new_tab
 from string import ascii_letters
 from tempfile import mkstemp
+from getpass import getuser
+from platform import linux_distribution
 import codecs
 
 from configparser import ConfigParser
@@ -70,6 +72,9 @@ LINKODE_SUPPORTED_LANGUAGES = tuple(sorted((
     'Erlang', 'Go', 'HTML', 'HTMLmixed', 'Haskell', 'JSON', 'Java',
     'JavaScript', 'Lua', 'MarkDown', 'PHP', 'Perl', 'Plain Text', 'Python', 'R',
     'Ruby', 'Rust', 'Scala', 'Shell', 'XML', 'http', 'sql', 'tex')))
+CSS_SNIPPET = """@charset 'utf-8';
+@import url(//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css);
+@import url(//fonts.googleapis.com/css?family=Oxygen);*{font-family:Oxygen};"""
 IMPSUM = tuple(sorted(("""at vero eos et accusamus et iusto odio dignissimos
 ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos in e
 dolores et quas molestias excepturi sint occaecati cupiditate non provident,
@@ -409,11 +414,13 @@ class MainWindow(QMainWindow):
         insertMenu.addAction(
             "Lorem Impsum...", lambda: self.code_editor.insert(self.lorem()))
         insertMenu.addAction("Horizontal line",
-                             lambda: self.code_editor.insert("#" * 80 + "\n\n"))
+                             lambda: self.code_editor.insert(self.comment()))
         insertMenu.addAction("Comment Title", lambda:
                              self.code_editor.insert(self.commentitle()))
         insertMenu.addAction("Python SheBang",
                              lambda: self.code_editor.insert(SHEBANG))
+        insertMenu.addAction("Base CSS Snippet",
+                             lambda: self.code_editor.insert(self.cssnippet()))
         insertMenu.addAction(
             "Date and Time", lambda: self.code_editor.insert(
                 datetime.now().strftime(" %A %B %d-%m-%Y %H:%M:%S %p ")))
@@ -529,13 +536,16 @@ class MainWindow(QMainWindow):
         helpMenu.addAction("About Linkode",
                            lambda: open_new_tab('http://linkode.org/about'))
         helpMenu.addSeparator()
-        helpMenu.addAction("Keyboard Shortcut", lambda: QMessageBox.information(
-            self, __doc__, "<b>Quit = CTRL + Q"))
+        helpMenu.addAction("Learn Python", lambda:
+                           open_new_tab('https://docs.python.org/3/tutorial'))
         if not sys.platform.startswith("win"):
             helpMenu.addAction("View Source Code", lambda: call(
                 ('xdg-open ' if sys.platform.startswith("linux") else 'open ') +
                 __file__, shell=True))
         helpMenu.addAction("View GitHub Repo", lambda: open_new_tab(__url__))
+        helpMenu.addSeparator()
+        helpMenu.addAction("Keyboard Shortcut", lambda: QMessageBox.information(
+            self, __doc__, "<b>Quit = CTRL + Q"))
         helpMenu.addAction("Report Bugs", lambda: open_new_tab(
             'https://github.com/juancarlospaco/linkode-gui/issues?state=open'))
         helpMenu.addAction("Check Updates", lambda: self.check_for_updates())
@@ -821,18 +831,45 @@ class MainWindow(QMainWindow):
         if length and length > 2:
             return "".join((sample(ascii_letters, length)))
 
-    def commentitle(self, text=None):
-        """Make a named comment title.
-        >>> isinstance(MainWindow().commentitle('test'), str)
+    def cssnippet(self):
+        """Return str with basic CSS snippet for a new stylesheet from scratch.
+        >>> isinstance(MainWindow().cssnippet(), str)
         True"""
-        comment_title = "#" * 80 + "\n#    "
+        comment = """\n/* {} by {} using {} */ \n\n    Type your styles here...
+        """.format(datetime.now().strftime("%A %B %d-%m-%Y %H:%M:%S %p"),
+                   getuser().title(), " ".join((linux_distribution())))
+        return CSS_SNIPPET + comment
+
+    def commentitle(self, lang=None, text=None):
+        """Make a named comment title.
+        >>> isinstance(MainWindow().commentitle('python', 'test'), str)
+        True"""
+        comment_title = "#" * 80 + "\n#    {}\n" + "#" * 80
+        if not lang or not len(lang.strip()):
+            lang = QInputDialog.getItem(self, __doc__, "<b>Choose Language ?:",
+                                        ("Python", "JS / CSS", "HTML"), 0, 0)[0]
         if not text or not len(text.strip()):
             text = str(QInputDialog.getText(self, __doc__, "<b>Title ?:")[0])
-        if text:
-            comment_title += text
-            comment_title = comment_title + "\n"
-            comment_title = comment_title + "#" * 80
-            return comment_title
+        if "js" in lang.lower():
+            comment_title = "/*\n" + comment_title + "\n*/\n\n"
+        elif "html" in lang.lower():
+            comment_title = "<!--\n" + comment_title + "\n-->\n\n"
+        if text and lang:
+            return comment_title.format(text.strip().upper())
+
+    def comment(self, lang=None):
+        """Return a commented out horizontal line for multiple coding languages.
+        >>> isinstance(MainWindow().comment('python'), str)
+        True"""
+        comment_horizontal_line = "#" * 80
+        if not lang or not len(lang.strip()):
+            lang = QInputDialog.getItem(self, __doc__, "<b>Choose Language ?:",
+                                        ("Python", "JS / CSS", "HTML"), 0, 0)[0]
+        if "js" in lang.lower():
+            comment_horizontal_line = "/*  " + comment_horizontal_line + "  */"
+        elif "html" in lang.lower():
+            comment_horizontal_line = "<!-- " + comment_horizontal_line + " -->"
+        return comment_horizontal_line + "\n\n"
 
     def previeweb(self, text=None):
         """Take a str and write to tempfile to preview it on web browsers."""
