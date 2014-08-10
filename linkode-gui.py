@@ -31,6 +31,8 @@ __source__ = ('https://raw.githubusercontent.com/juancarlospaco/'
 
 # imports
 import sys
+from sys import builtin_module_names
+from pkgutil import iter_modules
 from base64 import b64encode, urlsafe_b64encode
 from datetime import datetime
 from getopt import getopt
@@ -48,7 +50,7 @@ from platform import linux_distribution
 import codecs
 
 from configparser import ConfigParser
-from PyQt5.Qsci import QsciLexerPython, QsciScintilla
+from PyQt5.Qsci import QsciLexerPython, QsciScintilla, QsciAPIs
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtNetwork import QNetworkProxyFactory
@@ -171,7 +173,7 @@ class Simpleditor(QsciScintilla):
         self.setMarginSensitivity(1, True)
         self.setAutoCompletionCaseSensitivity(False)
         self.setAutoCompletionSource(QsciScintilla.AcsAll)
-        self.setAutoCompletionThreshold(2)
+        self.setAutoCompletionThreshold(1)
         self.setAutoIndent(True)
         self.setBackspaceUnindents(True)
         self.setIndentationGuides(True)
@@ -192,6 +194,17 @@ class Simpleditor(QsciScintilla):
         self.lexer.setDefaultFont(font)
         self.lexer.setPaper(QColor('#D5D8DB'))
         self.lexer.setDefaultPaper(QColor('#D5D8DB'))
+        autocompletion_api = QsciAPIs(self.lexer)
+        for word_for_autocomplete in builtin_module_names:
+            autocompletion_api.add(word_for_autocomplete)
+        for word_for_autocomplete in iter_modules():
+            autocompletion_api.add(word_for_autocomplete[1])
+        for word_for_autocomplete in tuple(__builtins__.__dict__.keys()):
+            autocompletion_api.add(word_for_autocomplete)
+        for word_for_autocomplete in tuple(dir(__builtins__)):
+            autocompletion_api.add(word_for_autocomplete)
+        autocompletion_api.add(getuser())
+        autocompletion_api.prepare()
         self.setLexer(self.lexer)
         # self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
         self.setEdgeMode(QsciScintilla.EdgeLine)
