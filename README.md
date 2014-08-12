@@ -48,7 +48,8 @@ linkode-gui
 - No root needed to install, compilable to Binary with [Nuitka](http://nuitka.net "Nuitka Python3 to Binary translator"), finally because I can :octocat:
 
 
-Donate:
--------
+Donate, Charityware :
+---------------------
 
+- [Charityware](https://en.wikipedia.org/wiki/Donationware) is a licensing model that supplies fully operational unrestricted software to the user and requests an optional donation be paid to a third-party beneficiary non-profit. The amount of the donation may be left to the discretion of the user.
 - If you want to Donate please [click here](http://www.icrc.org/eng/donations/index.jsp) or [click here](http://www.atheistalliance.org/support-aai/donate) or [click here](http://www.msf.org/donate) or [click here](http://richarddawkins.net/) or [click here](http://www.supportunicef.org/)
