@@ -530,6 +530,7 @@ class MainWindow(QMainWindow):
         windowMenu.addAction("Maximize", lambda: self.showMaximized())
         windowMenu.addAction("Restore", lambda: self.showNormal())
         windowMenu.addAction("Center", lambda: self.center())
+        windowMenu.addAction("Top-Left", lambda: self.move(0, 0))
         windowMenu.addAction("To Mouse", lambda: self.move_to_mouse_position())
         windowMenu.addSeparator()
         windowMenu.addAction(
@@ -542,6 +543,10 @@ class MainWindow(QMainWindow):
                              self.resize(self.minimumSize()))
         windowMenu.addAction("Maximum size", lambda:
                              self.resize(self.maximumSize()))
+        windowMenu.addAction("Horizontal Wide", lambda: self.resize(
+            self.maximumSize().width(), self.minimumSize().height()))
+        windowMenu.addAction("Vertical Tall", lambda: self.resize(
+            self.minimumSize().width(), self.maximumSize().height()))
         windowMenu.addSeparator()
         windowMenu.addAction("Set Font Family...", lambda:
                              self.setFont(QFontDialog.getFont()[0]))
