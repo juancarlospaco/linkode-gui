@@ -59,6 +59,14 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QColorDialog, QComboBox,
                              QGridLayout, QGroupBox, QInputDialog, QMainWindow,
                              QMessageBox, QPushButton, QShortcut, QVBoxLayout,
                              QWidget, QFontDialog)
+try:
+    import coffeescript
+except ImportError:
+    print("ERROR: coffeescript not found !. Run sudo pip3 install CoffeeScript")
+try:
+    import sass
+except ImportError:
+    print("ERROR: SASS / SCSS not found !. Run sudo pip3 install libsass")
 
 
 ###############################################################################
@@ -423,6 +431,21 @@ class MainWindow(QMainWindow):
             "StackOverflow Search selected text", lambda: open_new_tab(
                 "https://stackoverflow.com/search?q=" +
                 self.code_editor.selectedText()))
+        sourceMenu.addSeparator()
+        sourceMenu.addAction(
+            "Transpile CoffeeScript to JavaScript", lambda:
+            self.code_editor.replaceSelectedText(
+                coffeescript.compile(self.code_editor.selectedText())
+                ) if coffeescript else QMessageBox.information(
+                    self, __doc__, """<b>ERROR: coffeescript not found !. <br>
+                    Please run 'sudo pip3 install CoffeeScript' to enable!."""))
+        sourceMenu.addAction(
+            "Transpile SASS/SCSS to CSS", lambda:
+            self.code_editor.replaceSelectedText(
+                sass.compile(string=self.code_editor.selectedText())
+                ) if sass else QMessageBox.information(
+                    self, __doc__, """<b>ERROR: SASS/SCSS not found !. <br>
+                    Please run 'sudo pip3 install libsass' to enable!."""))
         insertMenu = self.menuBar().addMenu("&Insert")
         insertMenu.addAction(
             "Lorem Impsum...", lambda: self.code_editor.insert(self.lorem()))
@@ -872,8 +895,9 @@ class MainWindow(QMainWindow):
         True"""
         comment_title = "#" * 80 + "\n#    {}\n" + "#" * 80
         if not lang or not len(lang.strip()):
-            lang = QInputDialog.getItem(self, __doc__, "<b>Choose Language ?:",
-                                        ("Python", "JS / CSS", "HTML"), 0, 0)[0]
+            lang = QInputDialog.getItem(
+                self, __doc__, "<b>Choose Language ?:",
+                ("Python/Coffee", "JS / CSS", "HTML5"), 0, 0)[0]
         if not text or not len(text.strip()):
             text = str(QInputDialog.getText(self, __doc__, "<b>Title ?:")[0])
         if "js" in lang.lower():
@@ -889,8 +913,9 @@ class MainWindow(QMainWindow):
         True"""
         comment_horizontal_line = "#" * 80
         if not lang or not len(lang.strip()):
-            lang = QInputDialog.getItem(self, __doc__, "<b>Choose Language ?:",
-                                        ("Python", "JS / CSS", "HTML"), 0, 0)[0]
+            lang = QInputDialog.getItem(
+                self, __doc__, "<b>Choose Language ?:",
+                ("Python/Coffee", "JS / CSS", "HTML5"), 0, 0)[0]
         if "js" in lang.lower():
             comment_horizontal_line = "/*  " + comment_horizontal_line + "  */"
         elif "html" in lang.lower():
