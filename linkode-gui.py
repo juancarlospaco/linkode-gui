@@ -37,7 +37,7 @@ from base64 import b64encode, urlsafe_b64encode
 from datetime import datetime
 from getopt import getopt
 from json import loads
-from os import nice, path
+from os import path
 from random import choice, sample
 from re import sub
 from subprocess import call
@@ -1009,7 +1009,11 @@ class MainWindow(QMainWindow):
 
 def main():
     ' Main Loop '
-    nice(19)
+    try:
+        from os import nice  # isort:skip
+        nice(19)  # windows has no os.nice()
+    except Exception as error:
+        print(error)
     application = QApplication(sys.argv)
     application.setApplicationName(__doc__.strip().lower())
     application.setOrganizationName(__doc__.strip().lower())
