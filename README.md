@@ -37,6 +37,7 @@ linkode-gui
 
 - [Python 3.x](https://www.python.org "Python Homepage")
 - [PyQt 5.x](http://www.riverbankcomputing.co.uk/software/pyqt/download5 "PyQt5 Homepage")
+- Tested OK on MS Windows 7 O.S. (you need to install everything manually).
 
 
 # Why a Client ?:
